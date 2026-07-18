@@ -27,4 +27,5 @@ public class EnchantmentItemHandler extends ItemStackResourceHandler {
 
         else return false;
     }
+    public int getSlotLimit (int index) 
 }
