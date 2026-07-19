@@ -16,7 +16,7 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output){
         super.saveAdditional(output);
-
+        //커스텀 이름 설정
         if (this.hasCustomName()) {
             output.storeNullable("CustomName", ComponentSerialization.CODEC, this.getCustomName());
         }
