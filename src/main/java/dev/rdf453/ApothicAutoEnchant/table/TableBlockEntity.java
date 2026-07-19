@@ -1,5 +1,6 @@
 package dev.rdf453.ApothicAutoEnchant.table;
 //블럭 엔티티 설정
+import dev.rdf453.ApothicAutoEnchant.util.LibraryTransfer;
 import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -32,4 +33,6 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
             this.setCustomName(loadedName);
         }
     }
+
+    ((LibraryTransfer) TableBlockEntity).ApothicEnch%
 }
