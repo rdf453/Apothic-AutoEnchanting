@@ -4,11 +4,10 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
-//블럭 엔티티 설정
-import dev.rdf453.ApothicAutoEnchant.table.EnchantMenu;
 import dev.rdf453.ApothicAutoEnchant.util.FindLibrary;
 import dev.rdf453.ApothicAutoEnchant.util.LibraryTransfer;
 import dev.rdf453.ApothicAutoEnchant.util.XpTransfer;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -17,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.minecraft.world.entity.player.Player;
@@ -24,17 +24,17 @@ import net.minecraft.world.item.ItemStack;
 
 
 /*
- * 설계 메모 (2026-07-21 기준)
+ * 설계 메모 (2026-07-22 기준)
  * - 현재 상태:
- *   1) 자동화 상태(setAutoEnabled), 비용 선택(toggleCost), XP 탱크(xpTank), 도서관 좌표 캐시(libraryPos) 저장/복원 골격이 구현되어 있다.
- *   2) doEnchant 본체가 추가되어 FakePlayer + EnchantMenu 경유 인챈트 시도가 가능하다.
+ *   1) 자동화 상태, 비용 선택, XP 탱크, 도서관 좌표 캐시 저장/복원 골격이 구현되어 있다.
+ *   2) doEnchant 본체와 버퍼 전송 분리가 되어 있어 FakePlayer 경유 자동 인챈트 흐름을 잡아둘 수 있다.
  * - 다음 작업:
- *   1) 서버 tick 연결(static/serverTick + 블록 getTicker)로 doEnchant 호출 경로를 완성한다.
- *   2) 슬롯 1 결과물 복사/비우기와 도서관 버퍼 전송 경로를 doEnchant 후단에 붙인다.
- *   3) 메뉴 표시 동기화용 상태값을 Screen 쪽으로 노출한다.
+ *   1) static serverTick 연결과 블록 getTicker 연결을 마무리한다.
+ *   2) 슬롯 1 결과물 전송과 비우기 경로를 유지하면서 실패 시 재시도 정책을 확정한다.
+ *   3) 화면 표시 동기화용 상태값을 Screen 쪽으로 노출한다.
  * - 리스크/주의:
- *   1) 현재 XpTank 저장은 putLong/readInt 조합이라 타입 일관성 점검이 필요하다.
- *   2) libraryPos는 Optional.empty() 초기화를 유지해야 NPE 없이 탐색 재시도가 가능하다.
+ *   1) XpTank 저장 타입과 loadAdditional 읽기 타입의 일관성이 필요하다.
+ *   2) libraryPos는 Optional.empty() 초기화를 유지해야 탐색 재시도가 가능하다.
  */
 public class TableBlockEntity extends EnchantingTableBlockEntity {
     public boolean setAutoEnabled = false; 
@@ -46,7 +46,7 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
     
     //바닐라 인첸트 테이블 블럭엔티티 불러오기
     public TableBlockEntity(BlockPos Pos, BlockState State) {
-        super(Pos,State);
+        super(Pos, State);
     }
     //데이터를 NBT로 저장
     @Override
@@ -131,6 +131,14 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
         em.getSlot(1).set(ItemStack.EMPTY);
     }
 
+    private void doTransfer(EnchantMenu em)    {
+        if(!this.libraryPos.isEmpty()) {
+        BlockEntity LE = this.level.getBlockEntity(libraryPos.get());
+        if(LE instanceof LibraryTransfer transfer) {            
+        ItemStack copy = copyResult(em);            
+        if(transfer.AutoEnch_insertList(copy)) ClearSlot(em);}
+        }
+    }
     private void doEnchant() {
         if(!this.setAutoEnabled) return;
         if(this.libraryPos.isEmpty()&&this.level != null) this.libraryPos = FindLibrary.findLibraryPos(this.getBlockPos(),this.level);
@@ -149,15 +157,27 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
             EnchantMenu Em = new EnchantMenu(0,fp.getInventory() , this.getBlockPos());
             fp.giveExperienceLevels(this.xpTank); 
 
+            doTransfer(Em);
+
             //인첸트 진행
             boolean success = Em.clickMenuButton(fp, toggleCost);
 
             if(success){
+                //춘식이 xp 반환
                 this.xpTank = fp.totalExperience;
+
+                
+                doTransfer(Em);
                 this.setChanged();
             }
         }
     }
 
-    //도서관으로 전송
+    public static void serverTick(Level level, BlockPos pos, BlockState state, EnchantingTableBlockEntity blockEntity) {
+        if (blockEntity != null) {
+            if (blockEntity instanceof TableBlockEntity tableBlockEntity) {
+                tableBlockEntity.doEnchant();
+            }
+        }
+    }
 }

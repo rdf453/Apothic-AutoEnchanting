@@ -2,16 +2,16 @@ package dev.rdf453.ApothicAutoEnchant.table;
 //TODO:메뉴 구현
 
 /*
- * 설계 메모 (2026-07-21 기준)
+ * 설계 메모 (2026-07-22 기준)
  * - 현재 상태:
- *   1) 커스텀 버튼 ID(3~10) 서버 분기와 TableBlockEntity 호출 경로가 구현되어 있다.
- *   2) 생성자에서 BlockPos 기반으로 BE를 해석하고 null 가드로 NPE를 방지한다.
+ *   1) 버튼 ID(3~10) 서버 분기와 TableBlockEntity 호출 경로가 연결되어 있다.
+ *   2) 생성자에서 BlockPos 기반으로 BE를 해석해 기본 NPE 방지는 되어 있다.
  * - 다음 작업:
- *   1) 메뉴 타입 등록과 Screen 매핑 등록을 완료해 실제 UI 진입 경로를 연결한다.
+ *   1) 메뉴 타입 등록과 Screen 매핑 등록으로 실제 UI 진입 경로를 연결한다.
  *   2) 버튼 처리 전에 거리/블록 일치 권한 검증을 공통 분기로 추가한다.
- *   3) 화면 동기화용 상태 값(자동화 ON/OFF, xpTank, 비용 레벨) 노출 경로를 정리한다.
+ *   3) 화면 동기화용 상태 값(자동화 ON/OFF, xpTank, 비용 레벨)을 노출한다.
  * - 리스크/주의:
- *   1) 자동화 경로에서 가짜 플레이어 인벤토리 기반 생성 시 BE 해석 실패 가능성은 로그로만 처리되므로 재시도 정책이 필요할 수 있다.
+ *   1) 자동화 경로에서 가짜 플레이어 인벤토리 기반 생성 시 BE 해석 실패 가능성을 고려해야 한다.
  */
 
 import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantmentMenu;
