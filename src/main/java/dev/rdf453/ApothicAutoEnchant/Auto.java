@@ -30,7 +30,5 @@ public final class Auto {
 		public static final Holder<Block> AUTO_ENCHANT_TABLE = R.block("auto_enchant_table",
 			AutoEnchantingTableBlock::new,
 			p -> p.mapColor(MapColor.COLOR_RED).strength(5.0F, 1200.0F).requiresCorrectToolForDrops().lightLevel(s -> 7));
-
-		private static void bootstrap() {}
 	}
 }
