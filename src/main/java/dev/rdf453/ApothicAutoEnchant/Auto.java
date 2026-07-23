@@ -1,5 +1,11 @@
 package dev.rdf453.ApothicAutoEnchant;
 
+import dev.rdf453.ApothicAutoEnchant.table.AutoEnchantingTableBlock;
+import dev.shadowsoffire.placebo.registry.DeferredHelper;
+import net.minecraft.core.Holder;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.MapColor;
+
 /*
  * 설계 메모 (2026-07-22 기준)
  * - 현재 상태:
@@ -14,6 +20,17 @@ package dev.rdf453.ApothicAutoEnchant;
  */
 public final class Auto {
 
+	private static final DeferredHelper R = DeferredHelper.create(ApothicAutoEnchanting.MODID);
+
 	private Auto() {
+	}
+
+	public static final class Blocks {
+
+		public static final Holder<Block> AUTO_ENCHANT_TABLE = R.block("auto_enchant_table",
+			AutoEnchantingTableBlock::new,
+			p -> p.mapColor(MapColor.COLOR_RED).strength(5.0F, 1200.0F).requiresCorrectToolForDrops().lightLevel(s -> 7));
+
+		private static void bootstrap() {}
 	}
 }

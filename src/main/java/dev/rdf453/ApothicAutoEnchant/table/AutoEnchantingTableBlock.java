@@ -45,5 +45,7 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
             }
         });
     }
+
+    
     
 }

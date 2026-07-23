@@ -1,7 +1,9 @@
 package dev.rdf453.ApothicAutoEnchant;
 
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-
+import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 /*
  * 설계 메모 (2026-07-22 기준)
  * - 현재 상태:
@@ -19,4 +21,10 @@ public class ApothicAutoEnchanting {
 
     public static final String MODID = "Apothic_Auto_Enchanting";
 
+
+    @SubscribeEvent
+    public void addBlockEntityVaildBlocks(BlockEntityTypeAddBlocksEvent e) {
+        e.modify(BlockEntityType.ENCHANTING_TABLE, 
+            Auto.Blocks.AUTO_ENCHANT_TABLE.value());
+    }
 }

@@ -2,7 +2,9 @@ package dev.rdf453.ApothicAutoEnchant.table;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -34,13 +36,32 @@ import net.minecraft.world.item.ItemStack;
 //인첸트 부여 아이템이 없을때 부여 버튼 클릭 시 토글 상태 진입 및 on/off 버튼, xp관련 버튼 등장
 
 public class EnchTableScreen extends ApothEnchantmentScreen {
+	private record AutoButtonSpec(int offsetX, int offsetY, String label, int id, boolean costButton) {}
+
 	private static final Identifier PANEL_TEXTURE = Identifier.fromNamespaceAndPath("apothic_auto_enchanting", "textures/gui/table_ui.png");
+	private static final int TEX_WIDTH = 256;
+	private static final int TEX_HEIGHT = 256;
+
+	private static final int PANEL_OFFSET_X = -70;
+	private static final int PANEL_OFFSET_Y = 8;
 	private static final int PANEL_WIDTH = 64;
 	private static final int PANEL_HEIGHT = 116;
 	private static final int PANEL_U = 0;
 	private static final int PANEL_V = 0;
-	private static final int TEX_WIDTH = 256;
-	private static final int TEX_HEIGHT = 256;
+
+	private static final int BUTTON_WIDTH = 24;
+	private static final int BUTTON_HEIGHT = 20;
+	private static final int BUTTON_CAPTION_COLOR = 0xFFF6E7C8;
+	private static final AutoButtonSpec[] AUTO_BUTTON_LAYOUT = new AutoButtonSpec[] {
+		new AutoButtonSpec(8, 8, "+1", 3, true),
+		new AutoButtonSpec(34, 8, "+10", 4, true),
+		new AutoButtonSpec(8, 30, "-10", 5, true),
+		new AutoButtonSpec(34, 30, "+ALL", 6, false),
+		new AutoButtonSpec(8, 52, "-10", 8, false),
+		new AutoButtonSpec(34, 52, "-ALL", 9, false),
+		new AutoButtonSpec(8, 78, "AUTO", 10, false)
+	};
+
 	private static final int TOGGLE_AREA_X = 60;
 	private static final int TOGGLE_AREA_Y = 14;
 	private static final int TOGGLE_AREA_W = 108;
@@ -53,6 +74,7 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 
 	protected final EnchantMenu menu;
 	private final List<Button> autoButtons = new ArrayList<>();
+	private final Map<Button, Integer> autoButtonIds = new HashMap<>();
 	private boolean autoPanelOpen = false;
 	private int selectedCostButtonId = 3;
 
@@ -66,17 +88,13 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 	protected void init(){
 		super.init();
 		this.autoButtons.clear();
+		this.autoButtonIds.clear();
 
-		int panelX = this.leftPos - PANEL_WIDTH - 6;
-		int panelY = this.topPos + 8;
-
-		this.addAutoButton(panelX + 8, panelY + 8, "+1", 3, true);
-		this.addAutoButton(panelX + 34, panelY + 8, "+10", 4, true);
-		this.addAutoButton(panelX + 8, panelY + 30, "-10", 5, true);
-		this.addAutoButton(panelX + 34, panelY + 30, "+ALL", 6, false);
-		this.addAutoButton(panelX + 8, panelY + 52, "-10", 8, false);
-		this.addAutoButton(panelX + 34, panelY + 52, "-ALL", 9, false);
-		this.addAutoButton(panelX + 8, panelY + 78, "AUTO", 10, false);
+		int panelX = this.getPanelLeft();
+		int panelY = this.getPanelTop();
+		for (AutoButtonSpec spec : AUTO_BUTTON_LAYOUT) {
+			this.addAutoButton(panelX + spec.offsetX(), panelY + spec.offsetY(), spec.label(), spec.id(), spec.costButton());
+		}
 
 		this.syncAutoPanelVisibility();
 	}
@@ -87,8 +105,7 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 
 		float pulse = 0.675f + 0.325f * (float) Math.sin(System.currentTimeMillis() / 150.0D);
 		for (Button button : this.autoButtons) {
-			String text = button.getMessage().getString();
-			int id = this.buttonTextToId(text);
+			int id = this.getButtonId(button);
 			if (id >= 3 && id <= 5 && id == this.selectedCostButtonId) {
 				button.setAlpha(pulse);
 				button.setFGColor(0xFFEAA200);
@@ -120,8 +137,8 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 		super.extractBackground(guiGraphics, mouseX, mouseY, partialTick);
 		if (!this.autoPanelOpen) return;
 
-		int panelX = this.leftPos - PANEL_WIDTH - 6;
-		int panelY = this.topPos + 8;
+		int panelX = this.getPanelLeft();
+		int panelY = this.getPanelTop();
 		guiGraphics.blit(
 			RenderPipelines.GUI_TEXTURED,
 			PANEL_TEXTURE,
@@ -136,6 +153,20 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 		);
 
 		this.drawSelectedCostOverlay(guiGraphics);
+		this.drawAutoButtonCaptions(guiGraphics);
+	}
+
+	private void drawAutoButtonCaptions(GuiGraphicsExtractor guiGraphics) {
+		for (Button button : this.autoButtons) {
+			if (!button.visible) continue;
+
+			String caption = this.getButtonCaption(this.getButtonId(button));
+			if (caption.isEmpty()) continue;
+
+			int x = button.getX() + (BUTTON_WIDTH - this.font.width(caption)) / 2;
+			int y = button.getY() - 8;
+			guiGraphics.text(this.font, caption, x, y, BUTTON_CAPTION_COLOR, true);
+		}
 	}
 
 	private void drawSelectedCostOverlay(GuiGraphicsExtractor guiGraphics) {
@@ -166,10 +197,19 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 		Button btn = Button.builder(Component.literal(text), b -> {
 			if (isCostButton) this.selectedCostButtonId = buttonId;
 			this.sendMenuButton(buttonId);
-		}).bounds(x, y, 24, 20).build();
+		}).bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT).build();
+		this.autoButtonIds.put(btn, Integer.valueOf(buttonId));
 		btn.visible = false;
 		btn.active = false;
 		this.autoButtons.add(this.addRenderableWidget(btn));
+	}
+
+	private int getPanelLeft() {
+		return this.leftPos + PANEL_OFFSET_X;
+	}
+
+	private int getPanelTop() {
+		return this.topPos + PANEL_OFFSET_Y;
 	}
 
 	private void sendMenuButton(int id) {
@@ -197,12 +237,20 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 		}
 	}
 
-	private int buttonTextToId(String text) {
-		return switch (text) {
-			case "+1" -> 3;
-			case "+10" -> 4;
-			case "-10" -> 5;
-			default -> -1;
+	private int getButtonId(Button button) {
+		return this.autoButtonIds.getOrDefault(button, Integer.valueOf(-1));
+	}
+
+	private String getButtonCaption(int buttonId) {
+		return switch (buttonId) {
+			case 3 -> "+1 Lv";
+			case 4 -> "+10 Lv";
+			case 5 -> "-10 Lv";
+			case 6 -> "+ All Lv";
+			case 8 -> "-10 Lv";
+			case 9 -> "- All Lv";
+			case 10 -> "on off";
+			default -> "";
 		};
 	}
 

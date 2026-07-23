@@ -22,6 +22,14 @@ sourceSets.main.resources {
 repositories {
     gradlePluginPortal()
     mavenCentral()
+    // Shadows of Fire 공식 배포 저장소 (Placebo, ApothicAttributes 등)
+    maven {
+        name = "Shadows"
+        url = "https://maven.shadowsoffire.dev/releases"
+        content {
+            includeGroup "dev.shadowsoffire"
+        }
+    }
     // CurseForge 모드들을 메이븐 형태로 가져오기 위한 저장소
     maven {
         name = "CurseForge"
@@ -84,10 +92,13 @@ configurations {
 dependencies {
     // 1. 기존 아포틱 인챈팅 의존성
     implementation "curse.maven:Apothic Enchanting-1063926:8171092"
+
+    // 1-1. Placebo를 외부 라이브러리로 추가해 복사 소스 없이 등록 헬퍼를 사용한다.
+    implementation "dev.shadowsoffire:Placebo:26.1.2-10.0.1"
     
     // 2. 리포토리지(Reforgium) 의존성 추가
-    // (CurseForge Project ID: 838421 / 아래 파일 ID는 최신 네오포지용 버전 예시입니다)
-    implementation "curse.maven:reforgium-838421:5622176"
+    // 컴파일에는 필요하지 않으므로 런타임 전용으로 둔다.
+    localRuntime "curse.maven:reforgium-838421:5622176"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

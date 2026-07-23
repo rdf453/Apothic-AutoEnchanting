@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "package": "${modGroup}.${modid}.mixin",
+    "compatibilityLevel": "JAVA_${javaVersion}",
+    "maxShiftBy": 0,
+    "mixins": [
+${mixins}
+    ],
+    "client": [
+${clientMixins}
+    ],
+    "minVersion": "0.8"
+}
