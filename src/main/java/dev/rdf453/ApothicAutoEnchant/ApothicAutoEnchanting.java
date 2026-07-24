@@ -4,6 +4,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 /*
  * 설계 메모 (2026-07-22 기준)
  * - 현재 상태:
@@ -26,5 +32,18 @@ public class ApothicAutoEnchanting {
     public void addBlockEntityVaildBlocks(BlockEntityTypeAddBlocksEvent e) {
         e.modify(BlockEntityType.ENCHANTING_TABLE, 
             Auto.Blocks.AUTO_ENCHANT_TABLE.value());
+    }
+
+    private void addCreativeContents(BuildCreativeModeTabContentsEvent event) {
+    // 💡 ResourceLocation 대신 최신 'Identifier'를 사용합니다!
+    ResourceKey<CreativeModeTab> apothicEnchantTab = ResourceKey.create(
+        Registries.CREATIVE_MODE_TAB, 
+        Identifier.fromNamespaceAndPath("apothic_enchanting", "enchanting") // ◀ 여기도 Identifier로 교체
+    );
+
+    if (event.getTabKey().equals(apothicEnchantTab)) {
+        event.accept(Auto.Items.AUTO_ENCHANT_TABLE.value()); 
+    }
+
     }
 }

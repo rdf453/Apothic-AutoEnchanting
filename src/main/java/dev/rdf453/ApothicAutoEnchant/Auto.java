@@ -1,11 +1,15 @@
 package dev.rdf453.ApothicAutoEnchant;
 
+import java.util.function.UnaryOperator;
+
 import dev.rdf453.ApothicAutoEnchant.table.AutoEnchantingTableBlock;
+import dev.shadowsoffire.apothic_enchanting.Ench;
+import dev.shadowsoffire.apothic_enchanting.objects.TooltipBlockItem;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
-
+import net.minecraft.world.item.Item;
 /*
  * 설계 메모 (2026-07-22 기준)
  * - 현재 상태:
@@ -31,4 +35,11 @@ public final class Auto {
 			AutoEnchantingTableBlock::new,
 			p -> p.mapColor(MapColor.COLOR_RED).strength(5.0F, 1200.0F).requiresCorrectToolForDrops().lightLevel(s -> 7));
 	}
+
+	public static final class Items extends net.minecraft.world.item.Items {
+		public static final Holder<Item> AUTO_ENCHANT_TABLE = R.blockItem("auto_enchant_table", Auto.Blocks.AUTO_ENCHANT_TABLE,
+            TooltipBlockItem::new, UnaryOperator.identity());
+	} 
 }
+
+
