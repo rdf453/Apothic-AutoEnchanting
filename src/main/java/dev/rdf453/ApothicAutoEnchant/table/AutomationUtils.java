@@ -72,15 +72,15 @@ public final class AutomationUtils {
         tableBlockEntity.xpTank = 0;
         tableBlockEntity.setChanged();
     }
-
+    //결과물 복사
     private static ItemStack copyResult(EnchantMenu em) {
-        return em.getSlot(1).getItem().copy();
+        return em.getSlot(0).getItem().copy();
     }
-
+    //슬롯 비우기
     private static void clearSlot(EnchantMenu em) {
-        em.getSlot(1).set(ItemStack.EMPTY);
+        em.getSlot(0).set(ItemStack.EMPTY);
     }
-
+    //도서관으로 결과물 배출
     public static void doTransfer(TableBlockEntity tableBlockEntity, EnchantMenu em) {
         if (tableBlockEntity.libraryPos.isEmpty() || tableBlockEntity.tableLevel() == null) {
             return;
@@ -93,5 +93,23 @@ public final class AutomationUtils {
                 clearSlot(em);
             }
         }
+    }
+
+    private void copy() {
+
+    }
+
+    //인첸트 연료 가져오기
+    public static void bringFuel() {
+        if(tableBlockEntity.chestPos.isEmpty() || tableBlockEntity.tableLevel() == null) return;
+
+
+        //capablity 써서 슬롯 순회
+    }
+
+
+    //책가져오기
+    public static void bringBook() {
+        if(tableBlockEntity.chestPos.isEmpty() || tableBlockEntity.tableLevel() == null) return;
     }
 }

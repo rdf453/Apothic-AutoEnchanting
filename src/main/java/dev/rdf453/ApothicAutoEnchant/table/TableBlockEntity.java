@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
-import dev.rdf453.ApothicAutoEnchant.util.FindLibrary;
+import dev.rdf453.ApothicAutoEnchant.util.FindBlock;
 import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -39,6 +39,8 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
     int toggleCost = 3;
     long xpTank = 0;
     Optional<BlockPos> libraryPos = Optional.empty();
+    Optional<BlockPos> chestPos = Optional.empty();
+
     
     //바닐라 인첸트 테이블 블럭엔티티 불러오기
     public TableBlockEntity(BlockPos Pos, BlockState State) {
@@ -106,7 +108,8 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
     
     private void doEnchant() {
         if(!this.setAutoEnabled) return;
-        if(this.libraryPos.isEmpty()&&this.level != null) this.libraryPos = FindLibrary.findLibraryPos(this.getBlockPos(),this.level);
+        if(this.libraryPos.isEmpty()&&this.level != null) this.libraryPos = FindBlock.findLibraryPos(this.getBlockPos(),this.level);
+        if(this.chestPos.isEmpty()&&this.level != null) this.chestPos = FindBlock.findChestPos(this.getBlockPos(), this.level);
 
         //서버레벨로 캐스팅
         if(this.level instanceof ServerLevel serverLevel){
@@ -120,8 +123,9 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
             );
             //임시 메뉴 생성
             EnchantMenu Em = new EnchantMenu(0,fp.getInventory() , this.getBlockPos());
-            fp.giveExperienceLevels((int) this.xpTank);
-
+            fp.giveExperiencePoints((int) this.xpTank);
+            if(Em.getSlot(1).hasItem()) AutomationUtils.bringFuel();
+            if(Em.getSlot(0).hasItem()) AutomationUtils.bringBook();
             AutomationUtils.doTransfer(this, Em);
 
             //인첸트 진행
