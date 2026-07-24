@@ -1,0 +1,49 @@
+{
+  "type": "apothic_enchanting:infusion",
+  "input": {
+    "item": "minecraft:enchanting_table"
+  },
+  "result": {
+    "id": "apothicautoenchant:auto_enchant_table",
+    "count": 1
+  },
+  "requirements": {
+    "eterna": 50.0,
+    "quanta": 70.0,
+    "arcana": 90.0,
+    "rectification": -1.0,
+    "clues": -1.0
+  },
+  "max_requirements": {
+    "eterna": -1.0,
+    "quanta": 85.0,
+    "arcana": -1.0,
+    "rectification": -1.0,
+    "clues": -1.0
+  },
+
+  "_comment_01": "=========================================================================",
+  "_comment_02": " [자동 인챈트 테이블 연성용 - 여기까지 찾아온 당신을 위한 황금 밸런스 정답 배치도]",
+  "_comment_03": " - 요구 조건: Eterna 50.0 / Quanta 70.0 ~ 85.0 / Arcana 90.0",
+  "_comment_04": " ",
+  "_comment_05": " ■ 필수 필요 책장 및 오브젝트 총합 개수:",
+  "_comment_06": "   1) 드래코닉 엔드쉘프 (Draconic Endshelf) x 11개",
+  "_comment_07": "      - 에테르나(Eterna) 한계 돌파 및 맥스 스택 달성용",
+  "_comment_08": "   2) 메론 엔드쉘프 (Melon Endshelf) x 4개",
+  "_comment_09": "      - ★초핵심: 넘쳐나는 콴타(Quanta) 수치를 억제하여 85% 상한선 이하로 다운",
+  "_comment_10": "   3) 자수정/스컬크 에코쉘프 (Echoing Shelf) x 15개",
+  "_comment_11": "      - 극악의 아르카나(Arcana) 수치를 90% 위로 대폭 폭등시킴",
+  "_comment_12": " ",
+  "_comment_13": " ■ 배치 완료 시 최종 스펙 스냅샷:",
+  "_comment_14": "   - Eterna: 50.0 / 50.0 (MAX)",
+  "_comment_15": "   - Quanta: 73.0% (70% ~ 85% 세이프존 통과!)",
+  "_comment_16": "   - Arcana: 92.5% (90% 이상 통과!)",
+  "_comment_17": " ",
+  "_comment_18": " ※ 주의: 이 배치는 총 30개의 책장 공간을 소모하므로,",
+  "_comment_19": "         인챈트 테이블 주변 5x5 영역(최대 32개 공간)을 거의 가득 채워야 합니다.",
+  "_comment_20": "=========================================================================",
+  
+  
+}
+
+
