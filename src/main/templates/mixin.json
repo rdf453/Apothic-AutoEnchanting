@@ -1,6 +1,6 @@
 {
     "required": true,
-    "package": "${modGroup}.${modid}.mixin",
+    "package": "${modGroup}.${modid}",
     "compatibilityLevel": "JAVA_${javaVersion}",
     "maxShiftBy": 0,
     "mixins": [

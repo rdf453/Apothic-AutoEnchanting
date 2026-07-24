@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.minecraft.world.item.ItemStack;
 
 
 /*
@@ -124,8 +125,8 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
             //임시 메뉴 생성
             EnchantMenu Em = new EnchantMenu(0,fp.getInventory() , this.getBlockPos());
             fp.giveExperiencePoints((int) this.xpTank);
-            if(Em.getSlot(1).hasItem()) AutomationUtils.bringFuel();
-            if(Em.getSlot(0).hasItem()) AutomationUtils.bringBook();
+            if(Em.getSlot(1).getItem().getCount()<3) AutomationUtils.bringFuel(this);
+            if(Em.getSlot(0).hasItem()) AutomationUtils.bringBook(this);
             AutomationUtils.doTransfer(this, Em);
 
             //인첸트 진행
