@@ -2,8 +2,6 @@ package dev.rdf453.ApothicAutoEnchant.table;
 
 import javax.annotation.Nullable;
 
-//TODO:블럭의 속성 설정
-
 import dev.shadowsoffire.apothic_enchanting.table.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -45,7 +43,4 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
             }
         });
     }
-
-    
-    
 }

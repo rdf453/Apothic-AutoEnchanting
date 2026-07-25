@@ -1,6 +1,5 @@
 package dev.rdf453.ApothicAutoEnchant.MIxin;
 
-//TODO:플레이어의 상호작용에 반응하여 ui의 입력부에 넣기
 import dev.rdf453.ApothicAutoEnchant.util.LibraryTransfer;
 import dev.shadowsoffire.apothic_enchanting.library.EnchLibraryBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;

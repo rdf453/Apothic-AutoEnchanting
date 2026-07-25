@@ -1,5 +1,4 @@
 package dev.rdf453.ApothicAutoEnchant.table;
-//TODO:메뉴 구현
 
 /*
  * 설계 메모 (2026-07-23 기준)
@@ -85,7 +84,6 @@ public class EnchantMenu extends ApothEnchantmentMenu {
             case 3, 4, 5:
                 this.be.costSetter(id);
                 break;
-            //TODO:xp주입 회수 요청
             case 6:
                 this.be.injectAllLv(player);
                 break;

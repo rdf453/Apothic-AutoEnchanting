@@ -1,15 +1,24 @@
 package dev.rdf453.ApothicAutoEnchant;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import dev.rdf453.ApothicAutoEnchant.table.AutoEnchantingTableBlock;
+import dev.rdf453.ApothicAutoEnchant.table.EnchTableScreen;
+import dev.rdf453.ApothicAutoEnchant.table.EnchantMenu;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Items;
 /*
  * 설계 메모 (2026-07-22 기준)
  * - 현재 상태:
@@ -25,7 +34,11 @@ import net.minecraft.world.item.Items;
 @Mod(ApothicAutoEnchanting.MODID)
 public class ApothicAutoEnchanting {
 
-    public static final String MODID = "Apothic_Auto_Enchanting";
+    public static final String MODID = "apothic_auto_enchanting";
+
+    public ApothicAutoEnchanting(IEventBus modEventBus) {
+        modEventBus.addListener(EnchTableScreen::registerScreens);
+    }
 
 
     @SubscribeEvent
@@ -34,7 +47,8 @@ public class ApothicAutoEnchanting {
             Auto.Blocks.AUTO_ENCHANT_TABLE.value());
     }
 
-    private void addCreativeContents(BuildCreativeModeTabContentsEvent event) {
+    @SubscribeEvent
+    public void addCreativeContents(BuildCreativeModeTabContentsEvent event) {
     // 💡 ResourceLocation 대신 최신 'Identifier'를 사용합니다!
     ResourceKey<CreativeModeTab> apothicEnchantTab = ResourceKey.create(
         Registries.CREATIVE_MODE_TAB, 
@@ -44,6 +58,30 @@ public class ApothicAutoEnchanting {
     if (event.getTabKey().equals(apothicEnchantTab)) {
         event.accept(Auto.Items.AUTO_ENCHANT_TABLE.value()); 
     }
+    }
 
+
+    @EventBusSubscriber(modid = ApothicAutoEnchanting.MODID)
+    public static class InteractionEvents {
+        @SubscribeEvent
+        public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+            if (event.getLevel().isClientSide()) return;
+            if (event.getHand() != InteractionHand.MAIN_HAND) return;
+
+            if (!(event.getLevel().getBlockState(event.getPos()).getBlock() instanceof AutoEnchantingTableBlock)) return;
+
+            // 웅크린 우클릭은 원본 블록 동작(= Apoth 메뉴)으로 넘기고,
+            // 일반 우클릭은 자동화 메뉴를 직접 열어 커스텀 스크린을 사용한다.
+            if (event.getEntity().isCrouching()) return;
+
+            BlockPos pos = event.getPos();
+            event.getEntity().openMenu(
+                new SimpleMenuProvider((id, inv, player) -> new EnchantMenu(id, inv, pos), event.getLevel().getBlockState(pos).getBlock().getName()),
+                pos
+            );
+
+            event.setCancellationResult(InteractionResult.CONSUME);
+            event.setCanceled(true);
+        }
     }
 }

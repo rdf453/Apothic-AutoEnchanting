@@ -1,19 +1,13 @@
 package dev.rdf453.ApothicAutoEnchant.table;
-//TODO:패킷처리하기
-
-import java.util.Optional;
 
 import dev.rdf453.ApothicAutoEnchant.util.LibraryTransfer;
 import dev.rdf453.ApothicAutoEnchant.util.XpTransfer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.ItemCapability;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;

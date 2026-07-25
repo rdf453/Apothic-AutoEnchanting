@@ -4,7 +4,7 @@
     "item": "minecraft:enchanting_table"
   },
   "result": {
-    "id": "apothicautoenchant:auto_enchant_table",
+    "id": "apothic_auto_enchanting:auto_enchant_table",
     "count": 1
   },
   "requirements": {
@@ -41,9 +41,7 @@
   "_comment_17": " ",
   "_comment_18": " ※ 주의: 이 배치는 총 30개의 책장 공간을 소모하므로,",
   "_comment_19": "         인챈트 테이블 주변 5x5 영역(최대 32개 공간)을 거의 가득 채워야 합니다.",
-  "_comment_20": "=========================================================================",
-  
-  
+  "_comment_20": "========================================================================="
 }
 
 
