@@ -1,3 +1,4 @@
 {
-    item.apothicautoenchat
+    "block.apothic_auto_enchanting.auto_enchant_table": "자동 마법 부여대",
+    "block.apothic_auto_enchanting.auto_enchant_table.desc": "§7마법 부여 자동화 장치.\n§8우클릭으로 자동 모드를 엽니다.\n§8웅크리고 우클릭하면 수동모드를 엽니다."
 }
