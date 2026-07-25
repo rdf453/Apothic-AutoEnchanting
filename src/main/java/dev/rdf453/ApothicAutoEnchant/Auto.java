@@ -3,13 +3,15 @@ package dev.rdf453.ApothicAutoEnchant;
 import java.util.function.UnaryOperator;
 
 import dev.rdf453.ApothicAutoEnchant.table.AutoEnchantingTableBlock;
-import dev.shadowsoffire.apothic_enchanting.Ench;
+import dev.rdf453.ApothicAutoEnchant.table.EnchantMenu;
 import dev.shadowsoffire.apothic_enchanting.objects.TooltipBlockItem;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.inventory.EnchantmentMenu;
+import net.minecraft.world.inventory.MenuType;
 /*
  * 설계 메모 (2026-07-22 기준)
  * - 현재 상태:
@@ -40,6 +42,10 @@ public final class Auto {
 		public static final Holder<Item> AUTO_ENCHANT_TABLE = R.blockItem("auto_enchant_table", Auto.Blocks.AUTO_ENCHANT_TABLE,
             TooltipBlockItem::new, UnaryOperator.identity());
 	} 
+
+	public static final class Menus {
+		public static final MenuType<EnchantmentMenu> AUTO_ENCHANT_MENU = R.menuWithPos("auto_enchant_menu", (id, inv, pos) -> new EnchantMenu(id, inv, pos));
+	}
 }
 
 
