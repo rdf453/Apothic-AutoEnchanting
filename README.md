@@ -1,25 +1,32 @@
+# Apothic Auto Enchanting
 
-Installation information
-=======
+Apothic Enchanting 기반 자동 마법부여 보조 모드입니다.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+## 기능 요약
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+- 자동 마법 부여대 블록 추가
+- 블록 우클릭 동작 분기
+	- 일반 우클릭: 자동화 UI
+	- 웅크린 우클릭: 원본 Apothic Enchanting UI
+- 도서관/재료 연동 기반 자동 처리 로직
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+## 요구 사항
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+- Minecraft 26.1.2
+- NeoForge 26.1.2.78+
+- Apothic Enchanting
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+## 빌드
+
+```bash
+./gradlew clean jar
+```
+
+산출물:
+
+- build/libs/apothic_auto_enchanting-<version>.jar
+
+## 개발 메모
+
+- 모드 ID는 apothic_auto_enchanting으로 고정합니다.
+- 믹스인 설정 파일은 루트의 mixin.json을 사용합니다.
