@@ -21,11 +21,13 @@ package dev.rdf453.ApothicAutoEnchant.table;
 
 import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantmentMenu;
 import dev.shadowsoffire.apothic_enchanting.table.EnchantmentTableItemHandler;
+import dev.rdf453.ApothicAutoEnchant.Auto;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class EnchantMenu extends ApothEnchantmentMenu {
@@ -55,6 +57,11 @@ public class EnchantMenu extends ApothEnchantmentMenu {
             return tableBlockEntity;
         }
         return null;
+    }
+
+    @Override
+    public MenuType<?> getType() {
+        return Auto.Menus.AUTO_ENCHANT_MENU;
     }
 
     @Override

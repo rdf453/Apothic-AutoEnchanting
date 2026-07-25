@@ -16,8 +16,12 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.EnchantmentMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantmentMenu;
+import dev.rdf453.ApothicAutoEnchant.Auto;
 /*
  * 설계 메모 (2026-07-23 기준)
  * - 현재 상태:
@@ -33,7 +37,7 @@ import net.minecraft.world.item.ItemStack;
  *   1) mod id/리소스 경로 불일치 시 PANEL_TEXTURE 로딩 실패가 발생한다.
  *   2) 버튼 id 체계(0~2 원본, 3~10 자동화) 충돌 시 기존 인챈트 동작이 깨질 수 있다.
  */
-//인첸트 부여 아이템이 없을때 부여 버튼 클릭 시 토글 상태 진입 및 on/off 버튼, xp관련 버튼 등장
+//블럭 오른 클릭 자동 모드(EnchantMenu) Shift+ rightClick 수동모드(ApothEnchantMenu)
 
 public class EnchTableScreen extends ApothEnchantmentScreen {
 	private record AutoButtonSpec(int offsetX, int offsetY, String label, int id, boolean costButton) {}
@@ -72,16 +76,16 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 	private static final int OPTION_ROW_H = 19;
 
 
-	protected final EnchantMenu menu;
+	protected final ApothEnchantmentMenu menu;
 	private final List<Button> autoButtons = new ArrayList<>();
 	private final Map<Button, Integer> autoButtonIds = new HashMap<>();
 	private boolean autoPanelOpen = false;
 	private int selectedCostButtonId = 3;
 
 
-	public EnchTableScreen(EnchantMenu container,Inventory inv, Component tile) {
+	public EnchTableScreen(EnchantmentMenu container,Inventory inv, Component tile) {
 		super(container, inv, tile);
-		this.menu = (EnchantMenu) container;
+		this.menu = (ApothEnchantmentMenu) container;
 	}
 
 	@Override
@@ -252,6 +256,10 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 			case 10 -> "on off";
 			default -> "";
 		};
+	}
+
+	public static void registerScreens(RegisterMenuScreensEvent event) {
+		event.register(Auto.Menus.AUTO_ENCHANT_MENU, EnchTableScreen::new);
 	}
 
 }
