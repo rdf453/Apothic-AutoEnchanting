@@ -24,28 +24,33 @@ import net.minecraft.world.inventory.MenuType;
  *   1) 메인 클래스와 등록 클래스의 책임을 겹치지 않게 유지한다.
  *   2) modid 문자열과 등록 이름은 전체 패키지에서 일관되게 맞춘다.
  */
-public final class Auto {
+public class Auto {
 
-	private static final DeferredHelper R = DeferredHelper.create(ApothicAutoEnchanting.MODID);
+    public static final DeferredHelper R = DeferredHelper.create(ApothicAutoEnchanting.MODID);
 
-	private Auto() {
-	}
+    private Auto() {
+    }
 
-	public static final class Blocks {
+    // ★ [수정] 엇갈리던 bootstrap 메서드를 지우고, 자바 표준 static 초기화 구조로 교체합니다.
+    static {
+        // 자바가 내부 클래스 필드들을 확실히 강제 인지(로딩)하도록 트리거만 당겨줍니다.
+        Object b = Blocks.AUTO_ENCHANT_TABLE;
+        Object i = Items.AUTO_ENCHANT_TABLE;
+        Object m = Menus.AUTO_ENCHANT_MENU;
+    }
 
-		public static final Holder<Block> AUTO_ENCHANT_TABLE = R.block("auto_enchant_table",
-			AutoEnchantingTableBlock::new,
-			p -> p.mapColor(MapColor.COLOR_RED).strength(5.0F, 1200.0F).requiresCorrectToolForDrops().lightLevel(s -> 7));
-	}
+    public static final class Blocks {
+        public static final Holder<Block> AUTO_ENCHANT_TABLE = R.block("auto_enchant_table",
+            AutoEnchantingTableBlock::new,
+            p -> p.mapColor(MapColor.COLOR_RED).strength(5.0F, 1200.0F).requiresCorrectToolForDrops().lightLevel(s -> 7));
+    }
 
-	public static final class Items extends net.minecraft.world.item.Items {
-		public static final Holder<Item> AUTO_ENCHANT_TABLE = R.blockItem("auto_enchant_table", Auto.Blocks.AUTO_ENCHANT_TABLE,
+    public static final class Items {
+        public static final Holder<Item> AUTO_ENCHANT_TABLE = R.blockItem("auto_enchant_table", Auto.Blocks.AUTO_ENCHANT_TABLE,
             TooltipBlockItem::new, UnaryOperator.identity());
-	} 
+    } 
 
-	public static final class Menus {
-		public static final MenuType<EnchantmentMenu> AUTO_ENCHANT_MENU = R.menuWithPos("auto_enchant_menu", (id, inv, pos) -> new EnchantMenu(id, inv, pos));
-	}
+    public static final class Menus {
+        public static final MenuType<EnchantmentMenu> AUTO_ENCHANT_MENU = R.menuWithPos("auto_enchant_menu", (id, inv, pos) -> new EnchantMenu(id, inv, pos));
+    }
 }
-
-

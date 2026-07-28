@@ -1,65 +1,77 @@
 package dev.rdf453.ApothicAutoEnchant;
 
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import dev.rdf453.ApothicAutoEnchant.table.AutoEnchantingTableBlock;
-import dev.rdf453.ApothicAutoEnchant.table.EnchTableScreen;
-import dev.rdf453.ApothicAutoEnchant.table.EnchantMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier; 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge; // ◀ 네오포지 버스 임포트 추가
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.resources.Identifier;
-/*
- * 설계 메모 (2026-07-22 기준)
- * - 현재 상태:
- *   1) @Mod 진입점만 담당하는 최소 부트스트랩 클래스다.
- *   2) 실제 블록/BE/메뉴 등록은 Auto 쪽으로 분리할 수 있게 구조를 비워 두었다.
- * - 다음 작업:
- *   1) 공용 레지스트리 초기화가 필요하면 생성자에서 이벤트 버스 연결만 추가한다.
- *   2) 클라이언트 전용 등록은 별도 이벤트 헬퍼로 분리한다.
- * - 리스크/주의:
- *   1) modid 문자열은 리소스 경로와 일치하도록 유지한다.
- */
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import dev.rdf453.ApothicAutoEnchant.table.AutoEnchantingTableBlock;
+import dev.rdf453.ApothicAutoEnchant.table.EnchTableScreen;
+import dev.rdf453.ApothicAutoEnchant.table.EnchantMenu;
+import dev.shadowsoffire.apothic_enchanting.Ench;
+import dev.shadowsoffire.placebo.tabs.TabFillingRegistry;
 
 @Mod(ApothicAutoEnchanting.MODID)
 public class ApothicAutoEnchanting {
 
     public static final String MODID = "apothic_auto_enchanting";
+    public static final Logger LOGGER = LoggerFactory.getLogger("Apothesis : Auto Enchanting");
 
-    public ApothicAutoEnchanting(IEventBus modEventBus) {
-        modEventBus.addListener(EnchTableScreen::registerScreens);
+    public ApothicAutoEnchanting(IEventBus bus) {
+        // 1. 클라이언트 전용 화면 등록 리스너 연결
+        bus.addListener(EnchTableScreen::registerScreens);
+        
+        // 2. 모드 로딩 단계 리스너들 명시적으로 바인딩
+        bus.addListener(this::init);
+        bus.addListener(this::addBlockEntityVaildBlocks);
+        
+        // 3. 포지 이벤트 버스(NeoForge.EVENT_BUS)에 이 클래스를 등록하여 크리에이티브 탭 이벤트를 정상 수신하게 만듦
+        NeoForge.EVENT_BUS.register(this);
+        
+        // 4. 플라시보 최신 등록 사양에 맞춰 RegisterEvent 연동
+        bus.addListener(net.neoforged.neoforge.registries.RegisterEvent.class, event -> {
+            Auto.R.register(event);
+        });
     }
 
+    public void init(FMLCommonSetupEvent e) {
+        e.enqueueWork(() -> {
+            TabFillingRegistry.register(Ench.Tabs.ENCH.getKey(), Auto.Items.AUTO_ENCHANT_TABLE);
+        });
+    }
 
-    @SubscribeEvent
     public void addBlockEntityVaildBlocks(BlockEntityTypeAddBlocksEvent e) {
-        e.modify(BlockEntityType.ENCHANTING_TABLE, 
-            Auto.Blocks.AUTO_ENCHANT_TABLE.value());
+        e.modify(BlockEntityType.ENCHANTING_TABLE, Auto.Blocks.AUTO_ENCHANT_TABLE.value());
     }
 
+    // ★ Forge_BUS 이벤트를 받기 위해 @SubscribeEvent 애노테이션 부착
     @SubscribeEvent
     public void addCreativeContents(BuildCreativeModeTabContentsEvent event) {
-    // 💡 ResourceLocation 대신 최신 'Identifier'를 사용합니다!
-    ResourceKey<CreativeModeTab> apothicEnchantTab = ResourceKey.create(
-        Registries.CREATIVE_MODE_TAB, 
-        Identifier.fromNamespaceAndPath("apothic_enchanting", "enchanting") // ◀ 여기도 Identifier로 교체
-    );
+        ResourceKey<CreativeModeTab> apothicEnchantTab = ResourceKey.create(
+            Registries.CREATIVE_MODE_TAB, 
+            Identifier.fromNamespaceAndPath("apothic_enchanting", "enchanting")
+        );
 
-    if (event.getTabKey().equals(apothicEnchantTab)) {
-        event.accept(Auto.Items.AUTO_ENCHANT_TABLE.value()); 
+        if (event.getTabKey().equals(apothicEnchantTab)) {
+            event.accept(Auto.Items.AUTO_ENCHANT_TABLE.value()); 
+        }
     }
-    }
-
 
     @EventBusSubscriber(modid = ApothicAutoEnchanting.MODID)
     public static class InteractionEvents {
@@ -69,9 +81,6 @@ public class ApothicAutoEnchanting {
             if (event.getHand() != InteractionHand.MAIN_HAND) return;
 
             if (!(event.getLevel().getBlockState(event.getPos()).getBlock() instanceof AutoEnchantingTableBlock)) return;
-
-            // 웅크린 우클릭은 원본 블록 동작(= Apoth 메뉴)으로 넘기고,
-            // 일반 우클릭은 자동화 메뉴를 직접 열어 커스텀 스크린을 사용한다.
             if (event.getEntity().isCrouching()) return;
 
             BlockPos pos = event.getPos();
