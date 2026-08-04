@@ -21,7 +21,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantmentMenu;
-import dev.rdf453.ApothicAutoEnchant.Auto;
+
 /*
  * 설계 메모 (2026-07-23 기준)
  * - 현재 상태:
@@ -259,7 +259,7 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 	}
 
 	public static void registerScreens(RegisterMenuScreensEvent event) {
-		event.register(Auto.Menus.AUTO_ENCHANT_MENU, EnchTableScreen::new);
+		event.register(EnchantMenu.AUTO_ENCHANT_MENU.get(), EnchTableScreen::new);
 	}
 
 }

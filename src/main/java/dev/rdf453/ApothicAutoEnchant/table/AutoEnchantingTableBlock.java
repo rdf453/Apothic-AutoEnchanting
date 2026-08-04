@@ -2,14 +2,18 @@ package dev.rdf453.ApothicAutoEnchant.table;
 
 import javax.annotation.Nullable;
 
-import dev.shadowsoffire.apothic_enchanting.table.*;
+import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantingTableBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 /*
  * 설계 메모 (2026-07-22 기준)
@@ -28,6 +32,20 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
     public AutoEnchantingTableBlock(Block.Properties prop) {
         super(prop);
     }
+
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("apothic_auto_enchanting");
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems("apothic_auto_enchanting");
+
+    public static final DeferredBlock<AutoEnchantingTableBlock> BLOCK_HOLDER = BLOCKS.registerBlock(
+        "auto_enchant_table",
+        AutoEnchantingTableBlock::new,
+        properties -> properties.destroyTime(2.5f)
+    );
+
+    public static final DeferredItem<BlockItem> BLOCK_ITEM = ITEMS.registerSimpleBlockItem(
+            "auto_enchant_table", 
+            BLOCK_HOLDER
+    );
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

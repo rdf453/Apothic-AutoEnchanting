@@ -18,18 +18,29 @@ package dev.rdf453.ApothicAutoEnchant.table;
  *   3) 가짜 플레이어/자동화 경로에서는 BE 해석 실패 가능성을 계속 고려한다.
  */
 
+import dev.rdf453.ApothicAutoEnchant.ApothicAutoEnchanting;
 import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantmentMenu;
 import dev.shadowsoffire.apothic_enchanting.table.EnchantmentTableItemHandler;
-import dev.rdf453.ApothicAutoEnchant.Auto;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class EnchantMenu extends ApothEnchantmentMenu {
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, ApothicAutoEnchanting.MODID);
+
+    public static final DeferredHolder<MenuType<?>, MenuType<EnchantMenu>> AUTO_ENCHANT_MENU = MENUS.register(
+        "auto_enchant_menu",
+        () -> IMenuTypeExtension.create((id, inv, data) -> new EnchantMenu(id, inv, data.readBlockPos()))
+    );
+
     private final BlockPos tablePos;
     private TableBlockEntity be;
 
@@ -60,7 +71,7 @@ public class EnchantMenu extends ApothEnchantmentMenu {
 
     @Override
     public MenuType<?> getType() {
-        return Auto.Menus.AUTO_ENCHANT_MENU;
+        return AUTO_ENCHANT_MENU.get();
     }
 
     @Override
