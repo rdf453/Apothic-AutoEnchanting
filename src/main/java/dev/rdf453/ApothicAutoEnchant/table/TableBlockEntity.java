@@ -83,6 +83,8 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
         this.libraryPos = input.read("LibraryPos", BlockPos.CODEC);
     }
 
+
+
     public void costSetter(int id) {
         AutomationUtils.costSetter(this, id);
     }
@@ -161,6 +163,9 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
     
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TableBlockEntity>> BLOCK_ENTITY_TYPE_HOLDER =
         BLOCK_ENTITIES.register("table_block_entity", () ->
-            BlockEntityType.Builder.of(TableBlockEntity::new,AutoEnchantingTableBlock.BLOCK_HOLDER.get()).build(null)
+            new BlockEntityType<>(
+                TableBlockEntity::new,
+                    AutoEnchantingTableBlock.BLOCK_HOLDER.get()
+                )
         );    
 }
