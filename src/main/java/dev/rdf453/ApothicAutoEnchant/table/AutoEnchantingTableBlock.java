@@ -55,7 +55,9 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type ) {
-        return level.isClientSide() ? null : createTickerHelper(type, BlockEntityType.ENCHANTING_TABLE, (tickerLevel, tickerPos, tickerState, tickerBlockEntity) -> {
+        if (level.isClientSide()) return null;  
+            
+            return createTickerHelper(type, BlockEntityType.TableBlockEntity.get(), (tickerLevel, tickerPos, tickerState, tickerBlockEntity) -> {
             if (tickerBlockEntity instanceof TableBlockEntity tableBlockEntity) {
                 TableBlockEntity.serverTick(tickerLevel, tickerPos, tickerState, tableBlockEntity);
             }

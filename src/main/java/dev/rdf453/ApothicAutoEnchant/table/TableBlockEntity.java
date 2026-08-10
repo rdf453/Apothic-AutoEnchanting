@@ -12,12 +12,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 
 /*
@@ -151,4 +155,12 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
             }
         }
     }
+
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = 
+        DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, "apothic_auto_enchanting");
+    
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TableBlockEntity>> BLOCK_ENTITY_TYPE_HOLDER =
+        BLOCK_ENTITIES.register("table_block_entity", () ->
+            BlockEntityType.Builder.of(TableBlockEntity::new,AutoEnchantingTableBlock.BLOCK_HOLDER.get()).build(null)
+        );    
 }

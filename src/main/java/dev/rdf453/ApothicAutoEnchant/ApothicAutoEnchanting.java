@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,7 +28,7 @@ import dev.rdf453.ApothicAutoEnchant.table.EnchTableScreen;
 import dev.rdf453.ApothicAutoEnchant.table.EnchantMenu;
 import dev.shadowsoffire.apothic_enchanting.Ench;
 
-
+@EventBusSubscriber(modid =  ApothicAutoEnchanting.MODID)
 @Mod(ApothicAutoEnchanting.MODID)
 public class ApothicAutoEnchanting {
 
@@ -52,17 +53,10 @@ public class ApothicAutoEnchanting {
     
 
     
-    // ★ Forge_BUS 이벤트를 받기 위해 @SubscribeEvent 애노테이션 부착
+    
     @SubscribeEvent
-    public void addCreativeContents(BuildCreativeModeTabContentsEvent event) {
-        ResourceKey<CreativeModeTab> apothicEnchantTab = ResourceKey.create(
-            Registries.CREATIVE_MODE_TAB, 
-            Identifier.fromNamespaceAndPath("apothic_enchanting", "enchanting")
-        );
-
-        if (event.getTabKey().equals(apothicEnchantTab)) {
-            event.accept(AutoEnchantingTableBlock.BLOCK_ITEM.get()); 
-        }
+    public static void BuildContent(BuildCreativeModeTabContentsEvent e) {
+        if(e.getTabKey()==CreativeModeTabs.FUNCTIONAL_BLOCKS) e.accept(AutoEnchantingTableBlock.BLOCK_ITEM.get());
     }
 
     @EventBusSubscriber(modid = ApothicAutoEnchanting.MODID)
