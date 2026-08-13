@@ -240,10 +240,11 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 
 	private String getButtonCaption(int buttonId) {
 		return switch (buttonId) {
-			case 3 -> "+1 Lv";
-			case 4 -> "+10 Lv";
-			case 5 -> "-10 Lv";
+			case 3 -> "";
+			case 4 -> "";
+			case 5 -> "";
 			case 6 -> "+ All Lv";
+			case 7 -> "-10 LV";
 			case 8 -> "-10 Lv";
 			case 9 -> "- All Lv";
 			case 10 -> "on off";
