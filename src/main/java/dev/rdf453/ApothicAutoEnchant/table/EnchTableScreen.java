@@ -57,12 +57,13 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 	private static final int BUTTON_HEIGHT = 20;
 	private static final int BUTTON_CAPTION_COLOR = 0xFFF6E7C8;
 	private static final AutoButtonSpec[] AUTO_BUTTON_LAYOUT = new AutoButtonSpec[] {
-		new AutoButtonSpec(8, 8, "+1", 3, true),
-		new AutoButtonSpec(34, 8, "+10", 4, true),
-		new AutoButtonSpec(8, 30, "-10", 5, true),
-		new AutoButtonSpec(34, 30, "+ALL", 6, false),
-		new AutoButtonSpec(8, 52, "-10", 8, false),
-		new AutoButtonSpec(34, 52, "-ALL", 9, false),
+		new AutoButtonSpec(8, 8, "", 3, true),
+		new AutoButtonSpec(34, 8, "", 4, true),
+		new AutoButtonSpec(8, 30, "", 5, true),
+		new AutoButtonSpec(34, 30, "-ALL", 6, false),
+		new AutoButtonSpec(8,30,"-10",7,false),
+		new AutoButtonSpec(8, 52, "+10", 8, false),
+		new AutoButtonSpec(34, 52, "+ALL", 9, false),
 		new AutoButtonSpec(8, 78, "AUTO", 10, false)
 	};
 
@@ -97,9 +98,15 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 		int panelX = this.getPanelLeft();
 		int panelY = this.getPanelTop();
 		for (AutoButtonSpec spec : AUTO_BUTTON_LAYOUT) {
-			this.addAutoButton(panelX + spec.offsetX(), panelY + spec.offsetY(), spec.label(), spec.id(), spec.costButton());
+			this.addAutoButton(
+				panelX + spec.offsetX(),
+				panelY + spec.offsetY(), 
+				spec.label(), 
+				spec.id(), 
+				spec.costButton()
+			);
 		}
-
+		this.autoPanelOpen = true;
 		this.syncAutoPanelVisibility();
 	}
 
@@ -112,29 +119,12 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 			int id = this.getButtonId(button);
 			if (id >= 3 && id <= 5 && id == this.selectedCostButtonId) {
 				button.setAlpha(pulse);
-				button.setFGColor(0xFFEAA200);
 			} else {
-				button.setAlpha(1.0F);
-				button.clearFGColor();
+				button.setAlpha(0.0F);
 			}
 		}
 	}
 
-	@Override
-	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-		boolean shiftDown = (event.modifiers() & InputConstants.MOD_SHIFT) != 0;
-		if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && shiftDown && this.isToggleArea(event.x(), event.y())) {
-			if (this.autoPanelOpen) {
-				this.autoPanelOpen = false;
-			} else if (this.isInputSlotEmpty()) {
-				this.autoPanelOpen = true;
-			}
-			this.syncAutoPanelVisibility();
-			return true;
-		}
-
-		return super.mouseClicked(event, doubleClick);
-	}
 
 	@Override
 	public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -201,7 +191,10 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 		Button btn = Button.builder(Component.literal(text), b -> {
 			if (isCostButton) this.selectedCostButtonId = buttonId;
 			this.sendMenuButton(buttonId);
+
+			
 		}).bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT).build();
+		if(isCostButton) btn.setAlpha(0.0F);
 		this.autoButtonIds.put(btn, Integer.valueOf(buttonId));
 		btn.visible = false;
 		btn.active = false;
