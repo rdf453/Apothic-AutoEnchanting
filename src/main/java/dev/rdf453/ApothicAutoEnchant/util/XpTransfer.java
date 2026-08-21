@@ -17,7 +17,7 @@ public class XpTransfer {
     
 
 
-    private static int getXpForLevel(int level) {
+    public static int getXpForLevel(int level) {
         if (level <= 0) return 0;
         if (level <= 16) return level * level + 6 * level;
         if (level <= 31) return (int) (2.5 * level * level - 40.5 * level + 360);
@@ -38,6 +38,19 @@ public class XpTransfer {
 
         return xpForLevels - currentBarXp;
     }
+
+    public static int getLevelForExperience(long xp) {
+    if (xp < 353) 
+        return (int) (Math.sqrt((double) xp + 9) - 3);
+    
+    else if (xp < 1508) 
+        return (int) (Math.sqrt((double) xp * 0.4 - 78.390625) + 8.125);
+
+    else 
+        return (int) ((162.5 + Math.sqrt(18.0 * xp - 13553.75)) / 9.0);
+    
+}
+
 }
 
 

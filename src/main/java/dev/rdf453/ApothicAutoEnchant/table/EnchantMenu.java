@@ -19,6 +19,7 @@ package dev.rdf453.ApothicAutoEnchant.table;
  */
 
 import dev.rdf453.ApothicAutoEnchant.ApothicAutoEnchanting;
+import dev.rdf453.ApothicAutoEnchant.util.XpTransfer;
 import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantmentMenu;
 import dev.shadowsoffire.apothic_enchanting.table.EnchantmentTableItemHandler;
 import net.minecraft.core.BlockPos;
@@ -32,7 +33,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.server.level.ServerLevel;
 public class EnchantMenu extends ApothEnchantmentMenu {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, ApothicAutoEnchanting.MODID);
 
@@ -44,12 +46,17 @@ public class EnchantMenu extends ApothEnchantmentMenu {
     private final BlockPos tablePos;
     private TableBlockEntity be;
 
+    private static final int XP_LEVEL_DATA = 0;
+    
+    private final SimpleContainerData automationData =
+        new SimpleContainerData(1);
+
     public EnchantMenu(int id, Inventory inv, BlockPos pos) {
         super(id, inv, pos);
         this.tablePos = pos;
         // 메뉴 오픈 시점에 위치 기반으로 BE를 해석해 NPE를 사전에 차단한다.
         this.be = resolveTableBe(inv.player, pos);
-        
+        this.addDataSlots(this.automationData);
     }
 
     public EnchantMenu(int id, Inventory inv, ContainerLevelAccess wPos, EnchantmentTableItemHandler teInv, BlockPos pos) {
@@ -57,6 +64,7 @@ public class EnchantMenu extends ApothEnchantmentMenu {
         this.tablePos = pos;
         // 자동화/가짜 플레이어 경로도 동일한 초기화 규칙을 사용한다.
         this.be = resolveTableBe(inv.player, pos);
+        this.addDataSlots(this.automationData);
     }
 
     private static TableBlockEntity resolveTableBe(Player player, BlockPos pos) {
@@ -119,4 +127,35 @@ public class EnchantMenu extends ApothEnchantmentMenu {
         }
         return true;
     }
+    //현재 블럭이 소지중인 레벨 표시
+    public int getLevel(){
+        if(this.be == null) return 0;
+
+        return XpTransfer.getLevelForExperience(be.xpTank);
+    }
+
+    public boolean getOn() {
+        if(this.be == null) return false;
+
+        return be.setAutoEnabled;
+    }
+
+        @Override
+    public void broadcastChanges() {
+        if (this.be != null
+                && this.be.tableLevel() instanceof ServerLevel) {
+            this.automationData.set(
+                XP_LEVEL_DATA,
+                XpTransfer.getLevelForExperience(this.be.xpTank)
+            );
+        }
+    
+        super.broadcastChanges();
+    }
+
+    //containerData로 스크린과 서버 동기화 시도
+    public int getDisplayedXpLevel() {
+        return this.automationData.get(XP_LEVEL_DATA);
+    }
+
 }
