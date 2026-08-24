@@ -24,17 +24,17 @@ import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantmentMenu;
 import dev.shadowsoffire.apothic_enchanting.table.EnchantmentTableItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.server.level.ServerLevel;
 public class EnchantMenu extends ApothEnchantmentMenu {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, ApothicAutoEnchanting.MODID);
 
@@ -47,9 +47,10 @@ public class EnchantMenu extends ApothEnchantmentMenu {
     private TableBlockEntity be;
 
     private static final int XP_LEVEL_DATA = 0;
+    private static final int ACTIVATION_DATA = 1;
     
     private final SimpleContainerData automationData =
-        new SimpleContainerData(1);
+        new SimpleContainerData(2);
 
     public EnchantMenu(int id, Inventory inv, BlockPos pos) {
         super(id, inv, pos);
@@ -140,13 +141,18 @@ public class EnchantMenu extends ApothEnchantmentMenu {
         return be.setAutoEnabled;
     }
 
-        @Override
+    //[0] 레벨 [1] 활성화 여부
+    @Override
     public void broadcastChanges() {
         if (this.be != null
                 && this.be.tableLevel() instanceof ServerLevel) {
             this.automationData.set(
                 XP_LEVEL_DATA,
                 XpTransfer.getLevelForExperience(this.be.xpTank)
+            );
+            this.automationData.set(
+                ACTIVATION_DATA,
+                be.setAutoEnabled ? 1 : 0
             );
         }
     
@@ -156,6 +162,10 @@ public class EnchantMenu extends ApothEnchantmentMenu {
     //containerData로 스크린과 서버 동기화 시도
     public int getDisplayedXpLevel() {
         return this.automationData.get(XP_LEVEL_DATA);
+    }
+
+    public boolean getDisplayedActivation() {
+        return this.automationData.get(ACTIVATION_DATA) != 0;
     }
 
 }
