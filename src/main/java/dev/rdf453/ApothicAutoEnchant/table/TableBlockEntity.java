@@ -42,7 +42,7 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
     
     static final GameProfile gp = new GameProfile(UUID.fromString("eab7b8eb-83a5-eb85-b8ec-9888ec9e8400"), "춘식이");
     boolean setAutoEnabled = false;
-    int toggleCost = 3;
+    int toggleCost = -1;
     long xpTank = 0;
     Optional<BlockPos> libraryPos = Optional.empty();
     Optional<BlockPos> chestPos = Optional.empty();

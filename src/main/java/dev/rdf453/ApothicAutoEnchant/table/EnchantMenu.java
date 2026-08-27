@@ -48,9 +48,10 @@ public class EnchantMenu extends ApothEnchantmentMenu {
 
     private static final int XP_LEVEL_DATA = 0;
     private static final int ACTIVATION_DATA = 1;
-    
+    private static final int COST_SETTER = 2;
+
     private final SimpleContainerData automationData =
-        new SimpleContainerData(2);
+        new SimpleContainerData(3);
 
     public EnchantMenu(int id, Inventory inv, BlockPos pos) {
         super(id, inv, pos);
@@ -154,6 +155,10 @@ public class EnchantMenu extends ApothEnchantmentMenu {
                 ACTIVATION_DATA,
                 be.setAutoEnabled ? 1 : 0
             );
+            this.automationData.set(
+                COST_SETTER,
+                be.toggleCost
+            );
         }
     
         super.broadcastChanges();
@@ -166,6 +171,10 @@ public class EnchantMenu extends ApothEnchantmentMenu {
 
     public boolean getDisplayedActivation() {
         return this.automationData.get(ACTIVATION_DATA) != 0;
+    }
+
+    public int getCostSetter() {
+        return this.automationData.get(COST_SETTER);
     }
 
 }
