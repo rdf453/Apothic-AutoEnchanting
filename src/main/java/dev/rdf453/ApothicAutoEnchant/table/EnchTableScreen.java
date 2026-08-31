@@ -18,7 +18,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.EnchantmentMenu;
-
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 
 
@@ -63,38 +63,42 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 		//xp버튼
 		for(int i = 0 ; i< XP_BUTTON_LAYOUT.length;i++) {
 			xpButton data = XP_BUTTON_LAYOUT[i];
-			this.addRenderableWidget(Button.builder(
+			Button btn = Button.builder(
 				Component.literal(data.label()),
 				button -> {
+					if (this.menu.clickMenuButton(this.minecraft.player,data.id()))
 					this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId,
 					data.id());
 				})
-				.bounds(data.x(),data.y(),50,20).build()
-		);//아몰랑 영 안되면 위젯창으로 관리하는거 포기하지 뭐
-		xpLayout.setPosition(10, 20);
-		xpLayout.arrangeElements();
+				.size(50, 20).build();
+			xpLayout.addChild(btn, i % 2, i / 2);
 		}
+		xpLayout.setPosition(10, 20);
 		levelLabel = new StringWidget(
 			Component.literal(String.valueOf(autoMenu().getDisplayedXpLevel())).withColor(0x4CFC12),
 			this.font
 		);
-		levelLabel.setWidth(40);
+		levelLabel.setWidth(70);
 		levelLabel.setHeight(20);
 
-		xpLayout.addChild(levelLabel,1,1);
+		xpLayout.addChild(levelLabel,2,1);
+		
 
 		//활성화 버튼
 		onoff data = ONOFF_LAYOUT[0];
 		activation =  
-			this.addRenderableWidget(Button.builder(
+			Button.builder(
 			Component.literal(autoMenu().getDisplayedActivation() ? "ON":"OFF"),
 			button -> {
+				if (this.menu.clickMenuButton(this.minecraft.player,data.id()))
 				this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId,
 					data.id());
 			})
-			.bounds(data.x(),data.y(),50,20).build()
-		);
+			.size(70,20).build();
+		xpLayout.addChild(activation,3,1);
 		
+		xpLayout.arrangeElements();
+		xpLayout.visitWidgets(this::addRenderableWidget);
 	}
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
@@ -110,7 +114,7 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 				costSet = -1;
 				return true;
 			}//여기서의 costSet은 Menu로 보내는 id이다
-            if (xx >= 0.0 && yy >= 0.0 && xx < 108.0 && yy < 19.0 && this.menu.clickMenuButton(this.minecraft.player, i+3)) {
+            if (xx >= 0.0 && yy >= 0.0 && xx < 108.0 && yy < 19.0 && this.menu.clickMenuButton(this.minecraft.player, i+3)&&costSet == -1) {
                 this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, i+3);
                 return true;
             }
@@ -230,11 +234,10 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 				}
 			}
 		}
-
+	public static void registerScreens(RegisterMenuScreensEvent event) {
+		event.register(EnchantMenu.AUTO_ENCHANT_MENU.get(),EnchTableScreen::new);
+	}	
 }
 //#4cfc12
 //#16777088
-//**정리 
-// 1.파워 선택이 처음부터 다 뜨게 한다
-// 2. 특정 파워 선택시 선택한 파워 제외하고 전부 지운다
-// */
+

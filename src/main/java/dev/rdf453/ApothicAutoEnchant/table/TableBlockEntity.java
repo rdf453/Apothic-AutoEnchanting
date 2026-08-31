@@ -84,36 +84,36 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
     }
 
 
-
+//아
     public void costSetter(int id) {
         AutomationUtils.costSetter(this, id);
     }
-
+//몰
     public void toggleAutoEnabled() {
         AutomationUtils.toggleAutoEnabled(this);
     }
-
+//라
     public void inject10Lv(net.minecraft.world.entity.player.Player player) {
         AutomationUtils.inject10Lv(this, player);
     }
-
+//써
     public void injectAllLv(net.minecraft.world.entity.player.Player player) {
         AutomationUtils.injectAllLv(this, player);
     }
-
+//글
     public void eject10Lv(net.minecraft.world.entity.player.Player player) {
         AutomationUtils.eject10Lv(this, player);
     }
-
+//것
     public void ejectAllLv(net.minecraft.world.entity.player.Player player) {
         AutomationUtils.ejectAllLv(this, player);
     }
-
+//들
     public Level tableLevel() {
         return this.level;
     }
 
-    
+    //인첸트 실시
     private void doEnchant() {
         if(!this.setAutoEnabled) return;
         if(this.libraryPos.isEmpty()&&this.level != null) this.libraryPos = FindBlock.findLibraryPos(this.getBlockPos(),this.level);
@@ -149,7 +149,7 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
             }
         }
     }
-
+    //틱이벤트 수행
     public static void serverTick(Level level, BlockPos pos, BlockState state, EnchantingTableBlockEntity blockEntity) {
         if (blockEntity != null) {
             if (blockEntity instanceof TableBlockEntity tableBlockEntity) {
@@ -157,10 +157,10 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
             }
         }
     }
-
+    //레지스터 생성
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = 
         DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, "apothic_auto_enchanting");
-    
+    //블럭엔티티 홀더에 추가
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TableBlockEntity>> BLOCK_ENTITY_TYPE_HOLDER =
         BLOCK_ENTITIES.register("table_block_entity", () ->
             new BlockEntityType<>(

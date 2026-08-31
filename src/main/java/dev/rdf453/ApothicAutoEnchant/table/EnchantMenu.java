@@ -78,7 +78,7 @@ public class EnchantMenu extends ApothEnchantmentMenu {
         }
         return null;
     }
-
+//메뉴타입 반환
     @Override
     public MenuType<?> getType() {
         return AUTO_ENCHANT_MENU.get();

@@ -1,7 +1,7 @@
 package dev.rdf453.ApothicAutoEnchant.table;
 
-import dev.rdf453.ApothicAutoEnchant.util.LibraryTransfer;
 import dev.rdf453.ApothicAutoEnchant.util.XpTransfer;
+import dev.shadowsoffire.apothic_enchanting.library.EnchLibraryTile;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -95,16 +95,17 @@ public final class AutomationUtils {
     }
 
     // 도서관으로 결과물 배출
-    public static void doTransfer(TableBlockEntity tableBlockEntity, EnchantMenu em) {
-        if (tableBlockEntity.libraryPos.isEmpty() || tableBlockEntity.tableLevel() == null)
+    public static void doTransfer(TableBlockEntity tbe, EnchantMenu em) {
+        if (tbe.libraryPos.isEmpty() || tbe.tableLevel() == null)
             return;
 
-        BlockEntity blockEntity = tableBlockEntity.tableLevel().getBlockEntity(tableBlockEntity.libraryPos.get());
-        if (blockEntity instanceof LibraryTransfer transfer) {
+        BlockEntity blockEntity = tbe.tableLevel().getBlockEntity(tbe.libraryPos.get());
+        if (blockEntity instanceof EnchLibraryTile lib) {
             ItemStack copy = copyResult(em);
-            if (transfer.AutoEnch_insertList(copy)) {
+            //버퍼네 뭐네 하지말고 도서관 NBT로 직송
+            lib.depositBook(copy);
                 clearSlot(em);
-            }
+            
         }
     }
 
