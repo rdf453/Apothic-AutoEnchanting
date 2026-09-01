@@ -33,7 +33,6 @@ public class EnchantMenu extends ApothEnchantmentMenu {
     private static final int XP_LEVEL_DATA = 0;
     private static final int ACTIVATION_DATA = 1;
     private static final int COST_SETTER = 2;
-
     private final SimpleContainerData automationData =
         new SimpleContainerData(3);
 
