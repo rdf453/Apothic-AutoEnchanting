@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Holder;
 
+//트랜잭션 롤백용
 public record TableSnapShot(Object2IntOpenHashMap<Holder<ItemResource>> IO, Object2IntOpenHashMap<Holder<ItemResource>> Fuel) {}
 public class EnchantmentItemHandler extends SnapshotJournal<TableSnapShot> implements ResourceHandler<ItemResource> {
 
@@ -77,6 +78,6 @@ public class EnchantmentItemHandler extends SnapshotJournal<TableSnapShot> imple
 
     @Override
     protected void onRootCommit(TableSnapShot originalState) {
-        
+
     }
 }
