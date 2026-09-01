@@ -24,19 +24,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 
-/*
- * 설계 메모 (2026-07-22 기준)
- * - 현재 상태:
- *   1) 자동화 상태, 비용 선택, XP 탱크, 도서관 좌표 캐시 저장/복원 골격이 구현되어 있다.
- *   2) doEnchant 본체와 버퍼 전송 분리가 되어 있어 FakePlayer 경유 자동 인챈트 흐름을 잡아둘 수 있다.
- * - 다음 작업:
- *   1) static serverTick 연결과 블록 getTicker 연결을 마무리한다.
- *   2) 슬롯 1 결과물 전송과 비우기 경로를 유지하면서 실패 시 재시도 정책을 확정한다.
- *   3) 화면 표시 동기화용 상태값을 Screen 쪽으로 노출한다.
- * - 리스크/주의:
- *   1) XpTank 저장 타입과 loadAdditional 읽기 타입의 일관성이 필요하다.
- *   2) libraryPos는 Optional.empty() 초기화를 유지해야 탐색 재시도가 가능하다.
- */
+
 public class TableBlockEntity extends EnchantingTableBlockEntity {
     
     
@@ -132,9 +120,10 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
             //임시 메뉴 생성
             EnchantMenu Em = new EnchantMenu(0,fp.getInventory() , this.getBlockPos());
             fp.giveExperiencePoints((int) this.xpTank);
+            //청금석이 없을때
             if(Em.getSlot(1).getItem().getCount()<3) AutomationUtils.bringFuel(this, Em);
+            //책이 없을때
             if(!Em.getSlot(0).hasItem()) AutomationUtils.bringBook(this,Em);
-            AutomationUtils.doTransfer(this, Em);
 
             //인첸트 진행
             boolean success = Em.clickMenuButton(fp, toggleCost);

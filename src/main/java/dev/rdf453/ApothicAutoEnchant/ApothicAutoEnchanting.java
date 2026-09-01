@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import dev.rdf453.ApothicAutoEnchant.table.AutoEnchantingTableBlock;
 import dev.rdf453.ApothicAutoEnchant.table.EnchTableScreen;
 import dev.rdf453.ApothicAutoEnchant.table.EnchantMenu;
+import dev.rdf453.ApothicAutoEnchant.table.TableBlockEntity;
 import dev.shadowsoffire.apothic_enchanting.Ench;
 
 @EventBusSubscriber(modid =  ApothicAutoEnchanting.MODID)
@@ -43,7 +44,8 @@ public class ApothicAutoEnchanting {
         AutoEnchantingTableBlock.BLOCKS.register(bus);
         AutoEnchantingTableBlock.ITEMS.register(bus);
         EnchantMenu.MENUS.register(bus);
-
+        TableBlockEntity.BLOCK_ENTITIES.register(bus);
+        
         // 1. 클라이언트 전용 화면 등록 리스너 연결
         bus.addListener(EnchTableScreen::registerScreens);
         

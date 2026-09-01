@@ -127,7 +127,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             modGroup               : "dev.rdf453.ApothicAutoEnchant",
             modid                  : "MIxin",
             javaVersion            : "25",
-            mixins                 : "        \"LibraryTileMixin\",\n        \"LibraryBlockMixin\"",
+            mixins                 : "",
             clientMixins           : "",
     ]
     inputs.properties replaceProperties

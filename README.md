@@ -9,6 +9,7 @@ Apothic Enchanting 기반 자동 마법부여 보조 모드입니다.
 	- 일반 우클릭: 자동화 UI
 	- 웅크린 우클릭: 원본 Apothic Enchanting UI
 - 도서관/재료 연동 기반 자동 처리 로직
+- 인첸트 테이블 기준 +-5칸의 도서관과 상자(배낭,서랍등의 저장소)에 엑세스하여 자동화를 처리합니다
 
 ## 요구 사항
 
@@ -29,4 +30,4 @@ Apothic Enchanting 기반 자동 마법부여 보조 모드입니다.
 ## 개발 메모
 
 - 모드 ID는 apothic_auto_enchanting으로 고정합니다.
-- 믹스인 설정 파일은 루트의 mixin.json을 사용합니다.
+

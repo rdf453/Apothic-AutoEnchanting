@@ -10,18 +10,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import java.util.Arrays;
 
-/*
- * 설계 메모 (2026-07-22 기준)
- * - 현재 상태:
- *   1) 2슬롯 ResourceHandler와 createLibraryBuffer 팩토리까지 포함해 재사용 가능한 상태다.
- *   2) 테이블 쪽과 도서관 쪽의 허용 아이템 정책이 분리되어 있다.
- * - 다음 작업:
- *   1) 자동화 엔진에서 쓸 결과 슬롯/출력 정책을 더 확장할지 결정한다.
- *   2) 실제 블록엔티티 상태 저장과 핸들러 변경 이벤트를 연결한다.
- * - 리스크/주의:
- *   1) 트랜잭션 롤백이 없어서 복합 이체 시 정합성 검증이 필요하다.
- *   2) 도서관 버퍼는 책 전용, 기본 테이블은 책+인챈트 가능 아이템 허용 정책을 유지해야 한다.
- */
+
 public class EnchantmentItemHandler implements ResourceHandler<ItemResource> {
 
     @FunctionalInterface
