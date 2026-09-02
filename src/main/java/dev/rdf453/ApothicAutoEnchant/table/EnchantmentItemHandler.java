@@ -8,14 +8,13 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.item.ItemStackResourceHandler;
+
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Holder;
 
-//트랜잭션 롤백용
-public record TableSnapShot(Object2IntOpenHashMap<Holder<ItemResource>> IO, Object2IntOpenHashMap<Holder<ItemResource>> Fuel) {}
+
 public class EnchantmentItemHandler extends SnapshotJournal<TableSnapShot> implements ResourceHandler<ItemResource> {
 
     public static final AttachmentType<EnchantmentItemHandler> TYPE = AttachmentType.serializable(EnchantmentItemHandler::new).build();
@@ -41,12 +40,16 @@ public class EnchantmentItemHandler extends SnapshotJournal<TableSnapShot> imple
     // 슬롯에 몇 개 있는가
     @Override
     public long getAmountAsLong(int index) {
+        if(index == IO_SLOT) return ioStack.getCount();
 
+        else return FuelStack.getCount();
     }
     // 무엇을 최대 몇 개까지 담는가
     @Override
     public long getCapacityAsLong(int index, ItemResource resource){
+        if(index == IO_SLOT) return resource.isEmpty() || (resource.is(Items.BOOK)||resource.is(Items.ENCHANTED_BOOK)) ? 1 : 0;
 
+        else if(index == FUEL_SLOT) return resource.isEmpty() || resource.is(Items.LAPIS_LAZULI) ? 1 : 0;
     }
     // 무엇을 받아들이는가
     @Override
@@ -81,3 +84,4 @@ public class EnchantmentItemHandler extends SnapshotJournal<TableSnapShot> imple
 
     }
 }
+
