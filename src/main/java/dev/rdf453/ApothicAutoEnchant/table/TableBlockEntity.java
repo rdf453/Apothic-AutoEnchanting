@@ -54,7 +54,8 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
 
         
     }
-    //NBT데이터를 불러오기
+    //NBT데이터를 불러오기\
+    @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
 
