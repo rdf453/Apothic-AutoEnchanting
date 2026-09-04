@@ -11,7 +11,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -97,16 +96,16 @@ public final class AutomationUtils {
     }
 
     // 인첸트 연료 가져오기
-    public static void bringFuel(TableBlockEntity tableBlockEntity, EnchantMenu em) {
+    public static boolean bringFuel(TableBlockEntity tableBlockEntity, EnchantMenu em) {
         if (tableBlockEntity.chestPos.isEmpty() || tableBlockEntity.tableLevel() == null)
-            return;
+            return false;
 
         BlockPos pos = tableBlockEntity.chestPos.get();
         Level level = tableBlockEntity.tableLevel();
 
         ResourceHandler<ItemResource> itemHandler = level.getCapability(Capabilities.Item.BLOCK, pos, Direction.DOWN);
         if (itemHandler == null)
-            return;
+            return false;
 
         for (int i = 0; i < itemHandler.size(); i++) {
             ItemResource itemResource = itemHandler.getResource(i);
@@ -159,24 +158,25 @@ public final class AutomationUtils {
             }
 
         }
+        return true;
     }
 
     // 책가져오기
-    public static void bringBook(TableBlockEntity tableBlockEntity, EnchantMenu em) {
+    public static boolean bringBook(TableBlockEntity tableBlockEntity, EnchantMenu em) {
         if (tableBlockEntity.chestPos.isEmpty() || tableBlockEntity.tableLevel() == null)
-            return;
+            return false;
 
         BlockPos pos = tableBlockEntity.chestPos.get();
         Level level = tableBlockEntity.tableLevel();
 
         ResourceHandler<ItemResource> itemHandler = level.getCapability(Capabilities.Item.BLOCK, pos, Direction.DOWN);
         if (itemHandler == null)
-            return;
+            return false;
 
         for (int i = 0; i < itemHandler.size(); i++) {
             ItemResource itemResource = itemHandler.getResource(i);
             if (!itemResource.isEmpty()) {
-                if (itemResource.is(Items.LAPIS_LAZULI)) {
+                if (itemResource.is(Items.BOOK)) {
 
                     Slot fuel = em.getSlot(IO_SLOT);
                     ItemStack existingStack = fuel.getItem();
@@ -224,5 +224,6 @@ public final class AutomationUtils {
             }
 
         }
+        return true;
     }
 }

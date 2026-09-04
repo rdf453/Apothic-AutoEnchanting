@@ -3,7 +3,6 @@ package dev.rdf453.ApothicAutoEnchant.table;
 import javax.annotation.Nullable;
 
 import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantingTableBlock;
-import dev.shadowsoffire.apothic_enchanting.table.EnchantmentTableItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;

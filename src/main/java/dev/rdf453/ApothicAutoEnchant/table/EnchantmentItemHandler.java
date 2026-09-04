@@ -5,6 +5,8 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
+
+
 public class EnchantmentItemHandler extends ItemStacksResourceHandler {
 
     private static final int IO_SLOT = 0;

@@ -3,7 +3,6 @@ package dev.rdf453.ApothicAutoEnchant.table;
 import dev.rdf453.ApothicAutoEnchant.ApothicAutoEnchanting;
 import dev.rdf453.ApothicAutoEnchant.util.XpTransfer;
 import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantmentMenu;
-import dev.shadowsoffire.apothic_enchanting.table.EnchantmentTableItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
@@ -13,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.common.Tags;
@@ -21,7 +21,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
-public class EnchantMenu extends ApothEnchantmentMenu {
+public class EnchantMenu extends ApothEnchantmentMenu  {
     private static final int IO_SLOT = 0;
     private static final int FUEL_SLOT = 1;
 
@@ -45,13 +45,12 @@ public class EnchantMenu extends ApothEnchantmentMenu {
         this.tablePos = pos;
         // 메뉴 오픈 시점에 위치 기반으로 BE를 해석해 NPE를 사전에 차단한다.
         this.be = resolveTableBe(inv.player, pos);
+        //스크린 동기화용
         this.addDataSlots(this.automationData);
     }
     //이거 좀 어떻게 해봐요 
     public EnchantMenu(int id, Inventory inv, ContainerLevelAccess wPos, EnchantmentItemHandler teInv, BlockPos pos) {
-        super(id, inv, wPos,teInv,pos);
-        this.player = inv.player;
-        this.pos = pos;
+        super(id, inv, pos);
         this.tablePos = pos;
         // 자동화/가짜 플레이어 경로도 동일한 초기화 규칙을 사용한다.
         this.be = resolveTableBe(inv.player, pos);
@@ -75,6 +74,7 @@ public class EnchantMenu extends ApothEnchantmentMenu {
                 return stack.is(Tags.Items.ENCHANTING_FUELS);
             }
         });
+        initCommon(inv);
     }
     private static TableBlockEntity resolveTableBe(Player player, BlockPos pos) {
         if (player == null || player.level() == null)
@@ -85,6 +85,17 @@ public class EnchantMenu extends ApothEnchantmentMenu {
             return tableBlockEntity;
         }
         return null;
+    }
+
+    private void initCommon(Inventory inv) {
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                this.addSecretSlot(new Slot(inv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18 + 31));
+            }
+        }
+        for (int k = 0; k < 9; ++k) {
+            this.addSecretSlot(new Slot(inv, k, 8 + k * 18, 142 + 31));
+        }
     }
 
     // 메뉴타입 반환

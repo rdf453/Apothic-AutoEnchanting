@@ -5,18 +5,17 @@ import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 
 import dev.rdf453.ApothicAutoEnchant.util.FindBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
@@ -103,7 +102,7 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
 
     //인첸트 실시
     private void doEnchant() {
-        if(!this.setAutoEnabled) return;
+        if(!this.setAutoEnabled ||this.toggleCost == -1 ) return;
         if(this.libraryPos.isEmpty()&&this.level != null) this.libraryPos = FindBlock.findLibraryPos(this.getBlockPos(),this.level);
         if(this.chestPos.isEmpty()&&this.level != null) this.chestPos = FindBlock.findChestPos(this.getBlockPos(), this.level);
 
@@ -117,14 +116,32 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
                 this.worldPosition.getY(),
                 this.worldPosition.getZ()
             );
-            //임시 메뉴 생성
-            EnchantMenu Em = new EnchantMenu(0,fp.getInventory() , this.getBlockPos());
-            fp.giveExperiencePoints((int) this.xpTank);
-            //청금석이 없을때
-            if(Em.getSlot(1).getItem().getCount()<3) AutomationUtils.bringFuel(this, Em);
-            //책이 없을때
-            if(!Em.getSlot(0).hasItem()) AutomationUtils.bringBook(this,Em);
 
+            EnchantmentItemHandler handler = this.getData(EnchantmentItemHandler.TYPE);
+
+            //임시 메뉴 생성
+            EnchantMenu Em = new EnchantMenu(
+                0,
+                fp.getInventory(),
+                ContainerLevelAccess.create(serverLevel,this.getBlockPos()),
+                handler,
+                this.getBlockPos());
+            
+            //청금석이 없을때
+            if(Em.getSlot(1).getItem().getCount()<3) 
+                if (!AutomationUtils.bringFuel(this, Em)) {
+                    this.setAutoEnabled = false;
+                    this.setChanged();
+                    return;
+                }
+            //책이 없을때
+            if(!Em.getSlot(0).hasItem()) 
+                if (!AutomationUtils.bringBook(this,Em)) {
+                    this.setAutoEnabled = false;
+                    this.setChanged();
+                    return;
+                }
+            fp.giveExperiencePoints((int) this.xpTank);
             //인첸트 진행
             boolean success = Em.clickMenuButton(fp, toggleCost);
 
@@ -136,6 +153,10 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
                 AutomationUtils.doTransfer(this, Em);
                 this.setChanged();
             }
+            else {
+                this.xpTank = fp.totalExperience;
+                this.setChanged();
+            };
         }
     }
     //틱이벤트 수행

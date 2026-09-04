@@ -125,7 +125,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_license            : mod_license,
             mod_version            : mod_version,
             modGroup               : "dev.rdf453.ApothicAutoEnchant",
-            modid                  : "MIxin",
+            modid                  : "mixin",
             javaVersion            : "25",
             mixins                 : "",
             clientMixins           : "",
