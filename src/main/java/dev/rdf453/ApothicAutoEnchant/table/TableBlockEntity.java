@@ -27,13 +27,16 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class TableBlockEntity extends EnchantingTableBlockEntity {
     
     
-    static final GameProfile gp = new GameProfile(UUID.fromString("eab7b8eb-83a5-eb85-b8ec-9888ec9e8400"), "춘식이");
+    private static final GameProfile gp = new GameProfile(UUID.fromString("eab7b8eb-83a5-eb85-b8ec-9888ec9e8400"), "춘식이");
     boolean setAutoEnabled = false;
     int toggleCost = -1;
-    long xpTank = 0;
+    int xpTank = 0;
     Optional<BlockPos> libraryPos = Optional.empty();
     Optional<BlockPos> chestPos = Optional.empty();
-
+    
+    public int getxpTank() {
+        return xpTank;
+    }
     
     //바닐라 인첸트 테이블 블럭엔티티 불러오기
     public TableBlockEntity(BlockPos Pos, BlockState State) {
@@ -67,7 +70,7 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
         }
         this.setAutoEnabled = input.getBooleanOr("SetAutoEnabled", false);
         this.toggleCost = input.getIntOr("ToggleCost",0);
-        this.xpTank = input.getLongOr("XpTank", 0L);
+        this.xpTank = input.getIntOr("XpTank", 0);
         this.libraryPos = input.read("LibraryPos", BlockPos.CODEC);
     }
 
@@ -100,48 +103,66 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
     public Level tableLevel() {
         return this.level;
     }
-
-    //인첸트 실시
-    private void doEnchant() {
-        if(!this.setAutoEnabled ||this.toggleCost == -1 ) return;
+//도서관/상자 위치 찾기
+    private void finder() {
         if(this.libraryPos.isEmpty()&&this.level != null) this.libraryPos = FindBlock.findLibraryPos(this.getBlockPos(),this.level);
         if(this.chestPos.isEmpty()&&this.level != null) this.chestPos = FindBlock.findChestPos(this.getBlockPos(), this.level);
+    }
+//춘식이 소환
+    private FakePlayer summonChunSik(ServerLevel serverLevel) {    
+        return   FakePlayerFactory.get(serverLevel,gp);    
+    }
 
-        //서버레벨로 캐스팅
-        if(this.level instanceof ServerLevel serverLevel){
-            //춘식이 소환
-            FakePlayer fp = FakePlayerFactory.get(serverLevel,gp);
-            //춘식이 고정
-            fp.setPosRaw(
-                this.worldPosition.getX(),
-                this.worldPosition.getY(),
-                this.worldPosition.getZ()
-            );
-
-            EnchantmentItemHandler handler = this.getData(EnchantmentItemHandler.TYPE);
-
-            //임시 메뉴 생성
-            EnchantMenu Em = new EnchantMenu(
+//메뉴 생성
+    private  EnchantMenu getMenu(ServerLevel serverLevel, FakePlayer fp) {
+        EnchantmentItemHandler handler = this.getData(EnchantmentItemHandler.TYPE);
+        //임시 메뉴 생성
+        return new EnchantMenu(
                 0,
                 fp.getInventory(),
                 ContainerLevelAccess.create(serverLevel,this.getBlockPos()),
                 handler,
-                this.getBlockPos());
-            
-            //청금석이 없을때
+                this.getBlockPos()
+            );
+    }
+//가져오기
+    private  boolean bring(EnchantMenu Em) {
+        //청금석이 없을때
             if(Em.getSlot(1).getItem().getCount()<3) 
                 if (!AutomationUtils.bringFuel(this, Em)) {
                     this.setAutoEnabled = false;
                     this.setChanged();
-                    return;
+                    return false;
                 }
             //책이 없을때
             if(!Em.getSlot(0).hasItem()) 
                 if (!AutomationUtils.bringBook(this,Em)) {
                     this.setAutoEnabled = false;
                     this.setChanged();
-                    return;
+                    return false;
                 }
+            return true;   
+    }
+
+    //인첸트 실시
+    private void doEnchant() {
+        if(!this.setAutoEnabled ||this.toggleCost == -1 ) return;
+        finder();
+
+        //서버레벨로 캐스팅
+        if(this.level instanceof ServerLevel serverLevel){
+            FakePlayer fp = summonChunSik(serverLevel);
+            //춘식이 고정
+            fp.setPosRaw(
+                this.worldPosition.getX(),
+                this.worldPosition.getY(),
+                this.worldPosition.getZ()
+            );
+            EnchantMenu Em = getMenu(serverLevel, fp);
+
+            if(!bring(Em)) return;
+            
+            
             fp.giveExperiencePoints((int) this.xpTank);
             //인첸트 진행
             boolean success = Em.clickMenuButton(fp, toggleCost);
@@ -163,8 +184,8 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
     //틱이벤트 수행
     public static void serverTick(Level level, BlockPos pos, BlockState state, EnchantingTableBlockEntity blockEntity) {
         if (blockEntity != null) {
-            if (blockEntity instanceof TableBlockEntity tableBlockEntity) {
-                tableBlockEntity.doEnchant();
+            if (blockEntity instanceof TableBlockEntity tbe) {
+                tbe.doEnchant();
             }
         }
     }

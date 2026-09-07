@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantingTableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -18,7 +19,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.registries.DeferredItem;
-
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.phys.Vec3;
 
 public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
 
@@ -26,19 +28,40 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
         super(prop);
     }
 
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos,
+            boolean movedByPiston) {
+        if (level.getBlockEntity(pos) instanceof TableBlockEntity be) {
+            EnchantmentItemHandler handler = be.getData(EnchantmentItemHandler.TYPE);
+            for (int index = 0; index < handler.size(); index++) {
+                ItemResource resource = handler.getResource(index);
+                int amount = handler.getAmountAsInt(index);
+
+                if (!resource.isEmpty() && amount > 0) {
+                    Block.popResource(level, pos, resource.toStack(amount));
+                }
+            }
+            if (be.getxpTank() > 0) {
+
+                ExperienceOrb.award(
+                        level,
+                        Vec3.atCenterOf(pos),
+                        be.xpTank);
+            }
+        }
+    }
+
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("apothic_auto_enchanting");
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems("apothic_auto_enchanting");
 
     public static final DeferredBlock<AutoEnchantingTableBlock> BLOCK_HOLDER = BLOCKS.registerBlock(
-        "auto_enchant_table",
-        AutoEnchantingTableBlock::new,
-        properties -> properties.destroyTime(2.5f)
-    );
+            "auto_enchant_table",
+            AutoEnchantingTableBlock::new,
+            properties -> properties.destroyTime(2.5f));
 
     public static final DeferredItem<BlockItem> BLOCK_ITEM = ITEMS.registerSimpleBlockItem(
-            "auto_enchant_table", 
-            BLOCK_HOLDER
-    );
+            "auto_enchant_table",
+            BLOCK_HOLDER);
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -47,17 +70,20 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type ) {
-        if (level.isClientSide()) return null;  
-            
-            return createTickerHelper(type, TableBlockEntity.BLOCK_ENTITY_TYPE_HOLDER.get(), (tickerLevel, tickerPos, tickerState, tickerBlockEntity) -> {
-            if (tickerBlockEntity instanceof TableBlockEntity tableBlockEntity) {
-                TableBlockEntity.serverTick(tickerLevel, tickerPos, tickerState, tableBlockEntity);
-            }
-        });
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+            BlockEntityType<T> type) {
+        if (level.isClientSide())
+            return null;
+
+        return createTickerHelper(type, TableBlockEntity.BLOCK_ENTITY_TYPE_HOLDER.get(),
+                (tickerLevel, tickerPos, tickerState, tickerBlockEntity) -> {
+                    if (tickerBlockEntity instanceof TableBlockEntity tableBlockEntity) {
+                        TableBlockEntity.serverTick(tickerLevel, tickerPos, tickerState, tableBlockEntity);
+                    }
+                });
     }
 
     public static ResourceHandler<ItemResource> getItemHandler(EnchantingTableBlockEntity be, Direction dir) {
-        return (ResourceHandler)be.getData(EnchantmentItemHandler.TYPE);
+        return (ResourceHandler) be.getData(EnchantmentItemHandler.TYPE);
     }
 }
