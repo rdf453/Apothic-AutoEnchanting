@@ -6,6 +6,7 @@ import dev.shadowsoffire.apothic_enchanting.table.ApothEnchantingTableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -14,13 +15,12 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.phys.Vec3;
 
 public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
 
@@ -84,6 +84,6 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
     }
 
     public static ResourceHandler<ItemResource> getItemHandler(EnchantingTableBlockEntity be, Direction dir) {
-        return (ResourceHandler) be.getData(EnchantmentItemHandler.TYPE);
+        return be.getData(EnchantmentItemHandler.TYPE);
     }
 }
