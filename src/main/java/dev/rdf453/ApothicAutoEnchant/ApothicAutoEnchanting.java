@@ -15,19 +15,18 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge; // ◀ 네오포지 버스 임포트 추가
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import dev.rdf453.ApothicAutoEnchant.table.AutoEnchantingTableBlock;
 import dev.rdf453.ApothicAutoEnchant.table.EnchTableScreen;
 import dev.rdf453.ApothicAutoEnchant.table.EnchantMenu;
 import dev.rdf453.ApothicAutoEnchant.table.TableBlockEntity;
-import dev.shadowsoffire.apothic_enchanting.Ench;
+
 
 @EventBusSubscriber(modid =  ApothicAutoEnchanting.MODID)
 @Mod(ApothicAutoEnchanting.MODID)
