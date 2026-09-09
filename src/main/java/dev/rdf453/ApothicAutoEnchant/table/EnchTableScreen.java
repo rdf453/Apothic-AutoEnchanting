@@ -64,7 +64,7 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 		for(int i = 0 ; i< XP_BUTTON_LAYOUT.length;i++) {
 			xpButton data = XP_BUTTON_LAYOUT[i];
 			Button btn = Button.builder(
-				Component.literal(data.label()),
+				Component.literal(data.label()).withColor(i<2 ? 0x4CFC12 : 0xFC444A),
 				button -> {
 					if (this.menu.clickMenuButton(this.minecraft.player,data.id()))
 					this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId,
@@ -234,10 +234,11 @@ public class EnchTableScreen extends ApothEnchantmentScreen {
 				}
 			}
 		}
+		//메뉴-스크린 연결 및 등록
 	public static void registerScreens(RegisterMenuScreensEvent event) {
 		event.register(EnchantMenu.AUTO_ENCHANT_MENU.get(),EnchTableScreen::new);
 	}	
 }
 //#4cfc12
 //#16777088
-
+//#FC444A
