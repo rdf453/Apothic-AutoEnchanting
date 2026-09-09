@@ -5,11 +5,6 @@ import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 
 import dev.rdf453.ApothicAutoEnchant.util.FindBlock;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -17,6 +12,11 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -26,13 +26,14 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class TableBlockEntity extends EnchantingTableBlockEntity {
     
-    
+    private EnchantMenu Menu;
     private static final GameProfile gp = new GameProfile(UUID.fromString("eab7b8eb-83a5-eb85-b8ec-9888ec9e8400"), "춘식이");
     boolean setAutoEnabled = false;
     int toggleCost = -1;
     int xpTank = 0;
     Optional<BlockPos> libraryPos = Optional.empty();
     Optional<BlockPos> chestPos = Optional.empty();
+    
     
     public int getxpTank() {
         return xpTank;
@@ -115,15 +116,18 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
 
 //메뉴 생성
     private  EnchantMenu getMenu(ServerLevel serverLevel, FakePlayer fp) {
-        EnchantmentItemHandler handler = this.getData(EnchantmentItemHandler.TYPE);
+        if(this.Menu == null){
+            EnchantmentItemHandler handler = this.getData(EnchantmentItemHandler.TYPE);
         //임시 메뉴 생성
-        return new EnchantMenu(
+        this.Menu = new EnchantMenu(
                 0,
                 fp.getInventory(),
                 ContainerLevelAccess.create(serverLevel,this.getBlockPos()),
                 handler,
                 this.getBlockPos()
             );
+        }
+        return this.Menu;
     }
 //가져오기
     private  boolean bring(EnchantMenu Em) {
@@ -158,21 +162,21 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
                 this.worldPosition.getY(),
                 this.worldPosition.getZ()
             );
-            EnchantMenu Em = getMenu(serverLevel, fp);
+            Menu = getMenu(serverLevel, fp);
 
-            if(!bring(Em)) return;
+            if(!bring(Menu)) return;
             
             
             fp.giveExperiencePoints((int) this.xpTank);
             //인첸트 진행
-            boolean success = Em.clickMenuButton(fp, toggleCost);
+            boolean success = Menu.clickMenuButton(fp, toggleCost);
 
             if(success){
                 //춘식이 xp 반환
                 this.xpTank = fp.totalExperience;
 
                 
-                AutomationUtils.doTransfer(this, Em);
+                AutomationUtils.doTransfer(this, Menu);
                 this.setChanged();
             }
             else {
