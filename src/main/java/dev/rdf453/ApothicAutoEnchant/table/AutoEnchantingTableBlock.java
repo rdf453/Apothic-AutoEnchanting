@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -27,7 +26,7 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
     public AutoEnchantingTableBlock(Block.Properties prop) {
         super(prop);
     }
-
+    //파괴시 아이템/xp 떨구기
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos,
             boolean movedByPiston) {
@@ -50,7 +49,7 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
             }
         }
     }
-
+    //레지스터 등록
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("apothic_auto_enchanting");
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems("apothic_auto_enchanting");
 
@@ -62,12 +61,12 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
     public static final DeferredItem<BlockItem> BLOCK_ITEM = ITEMS.registerSimpleBlockItem(
             "auto_enchant_table",
             BLOCK_HOLDER);
-
+    //블럭엔티티 연결
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new TableBlockEntity(pos, state);
     }
-
+    //틱 이벤트 연결
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
@@ -82,8 +81,8 @@ public class AutoEnchantingTableBlock extends ApothEnchantingTableBlock {
                     }
                 });
     }
-
-    public static ResourceHandler<ItemResource> getItemHandler(EnchantingTableBlockEntity be, Direction dir) {
+    //아이템 핸들러 반환
+    public static ResourceHandler<ItemResource> getItemHandler(TableBlockEntity be, Direction dir) {
         return be.getData(EnchantmentItemHandler.TYPE);
     }
 }

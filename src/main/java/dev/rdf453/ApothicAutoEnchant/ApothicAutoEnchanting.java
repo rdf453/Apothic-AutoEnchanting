@@ -1,32 +1,25 @@
 package dev.rdf453.ApothicAutoEnchant;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier; 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.rdf453.ApothicAutoEnchant.table.AutoEnchantingTableBlock;
 import dev.rdf453.ApothicAutoEnchant.table.EnchTableScreen;
 import dev.rdf453.ApothicAutoEnchant.table.EnchantMenu;
 import dev.rdf453.ApothicAutoEnchant.table.TableBlockEntity;
-
+import dev.rdf453.ApothicAutoEnchant.table.EnchantmentItemHandler;
 
 @EventBusSubscriber(modid =  ApothicAutoEnchanting.MODID)
 @Mod(ApothicAutoEnchanting.MODID)
@@ -47,7 +40,7 @@ public class ApothicAutoEnchanting {
         
         // 1. 클라이언트 전용 화면 등록 리스너 연결
         bus.addListener(EnchTableScreen::registerScreens);
-        
+        bus.addListener(ApothicAutoEnchanting::registerCapabilities);
         
     }
 
@@ -80,4 +73,13 @@ public class ApothicAutoEnchanting {
             event.setCanceled(true);
         }
     }
+
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(
+            Capabilities.Item.BLOCK,
+            TableBlockEntity.BLOCK_ENTITY_TYPE_HOLDER.get(),
+            (blockEntity,direction) -> 
+                (blockEntity.getData(EnchantmentItemHandler.TYPE))
+        );
+    }    
 }

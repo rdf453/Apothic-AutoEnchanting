@@ -17,6 +17,8 @@ import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -203,5 +205,8 @@ public class TableBlockEntity extends EnchantingTableBlockEntity {
                 TableBlockEntity::new,
                     AutoEnchantingTableBlock.BLOCK_HOLDER.get()
                 )
-        );    
+        );
+    
+        
+
 }
